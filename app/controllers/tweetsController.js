@@ -43,9 +43,9 @@ function findTweetsByREST(player, team, author, max_id) {
              * Removing retweets from returned tweets to save memory,
              * and to avoid duplicates
              */
-            _.remove(tweets.statuses, function(t) {
-                return (!!t.retweeted_status)
-            });
+            // _.remove(tweets.statuses, function(t) {
+            //     return (!!t.retweeted_status)
+            // });
 
             return resolve(tweets);
         });
@@ -132,6 +132,12 @@ tweets.find = function(req, res) {
     var team = req.query.team;
     var author = req.query.author || '';
 
+    // var playerModel = new Player();
+
+    // var tweet = new Tweet({author: author,player: });
+
+
+    
     /* Each request retrieve max 100 tweets,
      * Here you get multiple requests to get more than 100 tweets if available.
      */
@@ -141,8 +147,12 @@ tweets.find = function(req, res) {
         //     console.log("tweets length: ", allTweets.length);
         //     res.send(allTweets);
         // });
-        res.send(tweets);
+        res.send(tweets)
     });
+
+
+
+
 
     //findTweetsBySTREAM(player, team, author);
 
