@@ -37,5 +37,5 @@ function listen () {
 
 function connect () {
   var options = { server: { socketOptions: { keepAlive: 1 } } };
-  return mongoose.connect("mongodb://shahzebjaved23:lahore1@ds151289.mlab.com:51289/node_twitter", options).connection;
+  return mongoose.connect("mongodb://root:password@ds123351.mlab.com:23351/nodetwitter", options).connection;
 }
