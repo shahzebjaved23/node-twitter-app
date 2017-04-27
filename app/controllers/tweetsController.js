@@ -147,6 +147,7 @@ tweets.find = function(req, res) {
         //     console.log("tweets length: ", allTweets.length);
         //     res.send(allTweets);
         // });
+        console.log(tweets);
         res.send(tweets)
     });
 
