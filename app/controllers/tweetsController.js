@@ -92,7 +92,7 @@ function findTweetsBySTREAM(player, team, author) {
          * matches the search criteria we need for player, team..
          *
          */
-        var found = _.conformsTo(tweet, {
+        var   found    = _.conformsTo(tweet, {
             /*
              *  matching only tweets that have player name, team name
              *  and one of the search criteria words : 'contract, offer, ..etc.'
@@ -157,5 +157,11 @@ tweets.find = function(req, res) {
     //findTweetsBySTREAM(player, team, author);
 
 }
+
+// "scripts": {
+  //   "start": "./node_modules/.bin/cross-env NODE_ENV=production ./node_modules/.bin/nodemon server.js",
+  //   "debug": "./node_modules/.bin/cross-env NODE_ENV=development ./node_modules/.bin/nodemon --debug server.js",
+  //   "test": "./node_modules/.bin/cross-env NODE_ENV=test ./node_modules/.bin/babel-tape-runner test/test-*.js"
+  // },
 
 module.exports = tweets;
