@@ -14,12 +14,20 @@ const twitterStream = require('twitter-stream-api');
 */
 
 const keys = {
-    consumer_key: config.twitter.consumer_key,
-    consumer_secret: config.twitter.consumer_secret,
-    token: config.twitter.token,
-    token_secret: config.twitter.token_secret,
-    bearer_token: config.twitter.bearer_token
-};
+    consumer_key: process.env.CONSUMER_KEY,
+    consumer_secret: process.env.CONSUMER_SECRET,
+    token: "197496793-yVnc4tIs1ORhgjJq6ZvpAABADzLVArmD4jIAUULy",
+    token_secret: "mn4RpqZfP1NLm6mmZb154uZ4nMNIJ1UHPwPsfopcVwYU7",
+    bearer_token: process.env.BEARER_TOKEN
+}
+
+// const keys = {
+//     consumer_key: process.env.CONSUMER_KEY,
+//     consumer_secret: process.env.CONSUMER_SECRET,
+//     token: process.env.token,
+//     token_secret: process.env.token_secret,
+//     bearer_token: process.env.bearer_token
+// };
 
 module.exports = {
     REST: new twitterRest(keys),
