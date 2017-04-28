@@ -38,4 +38,5 @@ function listen () {
 function connect () {
   var options = { server: { socketOptions: { keepAlive: 1 } } };
   return mongoose.connect("mongodb://root:password@ds123351.mlab.com:23351/nodetwitter", options).connection;
+  // return mongoose.connect("mongodb://localhost/SoccerTransfer", options).connection;
 }

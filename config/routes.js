@@ -15,6 +15,10 @@ module.exports = function(app) {
 
     app.get('/find', tweetsController.find);
 
+    app.get('/frequency',tweetsController.getFrequency);
+
+    app.get('/getTweetsByRest',tweetsController.getTweetsByRest);
+
     app.get('/get_twitter_bearer_token', function(req, res) {
         var consumer_key_base64 = config.twitter.consumer_key;
         var consumer_secret_base64 = config.twitter.consumer_secret;

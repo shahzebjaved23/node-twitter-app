@@ -5,8 +5,7 @@ module.exports = {
     twitter: {
         consumer_key: process.env.CONSUMER_KEY,
         consumer_secret: process.env.CONSUMER_SECRET,
-        token: "197496793-yVnc4tIs1ORhgjJq6ZvpAABADzLVArmD4jIAUULy",
-        token_secret: "mn4RpqZfP1NLm6mmZb154uZ4nMNIJ1UHPwPsfopcVwYU7",
-        bearer_token: process.env.BEARER_TOKEN
+        access_token_key: "197496793-yVnc4tIs1ORhgjJq6ZvpAABADzLVArmD4jIAUULy",
+        access_token_secret: "mn4RpqZfP1NLm6mmZb154uZ4nMNIJ1UHPwPsfopcVwYU7"
     }
 };

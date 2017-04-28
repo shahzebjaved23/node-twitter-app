@@ -16,6 +16,7 @@ var tweets = {};
  *
  */
 function findTweetsByREST(player, team, author, max_id) {
+
     return new Promise(function(resolve, reject) {
 
         // words used to match with query to twitter using OR operator
@@ -37,8 +38,26 @@ function findTweetsByREST(player, team, author, max_id) {
          * Twitter REST API, 
          * q: searchString, count: Number of tweets returned.
          */
-        TwitterREST.get('search/tweets', { q: searchStringREST, count: 100, max_id: max_id || null }, function(error, tweets, response) {
 
+        var since;
+
+        Tweet.find().exec(function(err,data){
+            if(err){
+                console.log(err)
+            }else{
+                if(data[0] != null){
+                    since = data[0].created_at; 
+                    searchStringREST = searchStringREST + " since : " + since;
+                }
+            }
+        })
+
+        console.log(searchStringREST);
+
+        console.log(since)
+
+        TwitterREST.get('search/tweets', { q: searchStringREST, count: 300, since: since }, function(error, tweets, response) {
+            
             /*
              * Removing retweets from returned tweets to save memory,
              * and to avoid duplicates
@@ -49,6 +68,7 @@ function findTweetsByREST(player, team, author, max_id) {
 
             return resolve(tweets);
         });
+        
     });
 }
 
@@ -85,7 +105,7 @@ function findTweetsBySTREAM(player, team, author) {
 
         }, 10 * 1000); //time in mills.
 
-        console.log(tweet.id_str, tweet.user.screen_name, tweet.text);
+        // console.log(tweet.id_str, tweet.user.screen_name, tweet.text);
 
         /* 
          * using lodash conforms method to check if the returned tweet
@@ -132,6 +152,8 @@ tweets.find = function(req, res) {
     var team = req.query.team;
     var author = req.query.author || '';
 
+
+
     // var playerModel = new Player();
 
     // var tweet = new Tweet({author: author,player: });
@@ -147,9 +169,55 @@ tweets.find = function(req, res) {
         //     console.log("tweets length: ", allTweets.length);
         //     res.send(allTweets);
         // });
-        console.log(tweets);
-        res.send(tweets)
+        // tweets.statuses.forEach(function(tweet){
+        //     Tweet.insert()
+        // })
+
+        
+        // tweets.statuses.forEach(function(tweet){
+        //     var newTweet = new Tweet({
+        //         author: tweet.user.name,
+        //         tweet:{
+        //             id: tweet.id,
+        //             text: tweet.text,
+        //         },
+        //         created_at: tweet.created_at,
+        //         hashtags: tweet.entities.hashtags,
+        //         author_link: tweet.entities.urls.url,
+        //         tweet_link: tweet.entities.urls.expanded_url
+        //     });
+
+        //     newTweet.save(function(err,data){
+        //         if(err){
+        //             console.log(err)
+        //         }else{
+        //             console.log(data)
+        //         }
+        //     }); 
+        // })
+
+        Tweet.find().exec(function(err,ntweets){
+            if(err){
+                console.log(err)
+            }else{
+                if(ntweets.length > 0){
+                    res.send(ntweets)
+                }
+                // else{
+                //     res.send(tweets);
+                // }
+            }
+        })
+
+         // res.send(tweets);
+        
     });
+
+
+    // insert the tweets and insert into the db
+    // get the next tweets after the created_at of the last tweet,
+    // uset he aggregation framework of the mongodb for getting the frequesncies
+    // make sure the db and the api can be adequately queried 
 
 
 
@@ -157,6 +225,140 @@ tweets.find = function(req, res) {
 
     //findTweetsBySTREAM(player, team, author);
 
+}
+
+tweets.getTweetsByRest = function(req,res){
+
+    var player = req.query.player;
+    var team = req.query.team;
+    var author = req.query.author;
+
+    var matchWords = 'contract OR transfer OR offer OR bargain OR signs OR deal OR buy OR purchase OR trade OR accept OR move OR moving OR rumours';
+
+    // the query string to twitter, ex. ' "Rooney" "#manutd" contract OR transfer..'
+    var searchStringREST = `\"${player}\" \"${team}\" ${matchWords}`;
+
+    /* 
+     *  searching by player, team, or author twitter handles.
+     *  appending 'from:' filter to search string to get tweets from given account handles.
+     */
+    if (~player.search("@")) { player = player.split('@')[1]; searchStringREST = `from:${player} \"${team}\" ${matchWords}` };
+    if (~team.search("@")) { team = team.split('@')[1]; searchStringREST = `from:${team} \"${player}\" ${matchWords}` };
+    if (~author.search("@")) { author = author.split('@')[1]; searchStringREST = `from:${author} \"${player}\" \"${team}\" ${matchWords}` };
+
+    console.log(searchStringREST)
+    /*
+     * Twitter REST API, 
+     * q: searchString, count: Number of tweets returned.
+     */
+
+
+    Tweet.find().exec(function(err,data){
+        if(err){
+            console.log(err)
+        }else{
+            
+            if(data.length > 0){
+                console.log("if")
+                searchStringREST = searchStringREST + " since : " + data[0].created_at;
+                TwitterREST.get('search/tweets', { q: searchStringREST, count: 300}, function(error, tweets, response){
+                    console.log(tweets.statuses.length)
+                    tweets.statuses.forEach(function(tweet){
+                        var newTweet = new Tweet({
+                            author: tweet.user.name,
+                            tweet:{
+                                id: tweet.id,
+                                text: tweet.text,
+                            },
+                            created_at: tweet.created_at,
+                            hashtags: tweet.entities.hashtags,
+                            author_link: tweet.entities.urls.url,
+                            tweet_link: tweet.entities.urls.expanded_url
+                        });
+
+                        newTweet.save(function(err,data){
+                            if(err){
+                                console.log(err)
+                            }else{
+                                // console.log(data)
+                            }
+                        }); 
+                    })
+
+                    Tweet.find().exec(function(err,data){
+                        if(err){
+                            console.log(err)
+                        }else{
+                            res.send(data)        
+                        }
+                    })
+                }) 
+            }else{
+                console.log("else")
+                TwitterREST.get('search/tweets', { q: searchStringREST, count: 300 }, function(error, tweets, response){
+                    console.log(tweets.statuses.length);
+                    if(tweets.statuses != null){
+                        tweets.statuses.forEach(function(tweet){
+                            var newTweet = new Tweet({
+                                author: tweet.user.name,
+                                tweet:{
+                                    id: tweet.id,
+                                    text: tweet.text,
+                                },
+                                created_at: tweet.created_at,
+                                hashtags: tweet.entities.hashtags,
+                                author_link: tweet.entities.urls.url,
+                                tweet_link: tweet.entities.urls.expanded_url
+                            });
+
+                            newTweet.save(function(err,data){
+                                if(err){
+                                    console.log(err)
+                                }else{
+                                    // console.log(data)
+                                }
+                            }); 
+                        })
+
+                        Tweet.find().exec(function(err,data){
+                            if(err){
+                                console.log(err)
+                            }else{
+                                res.send(data)        
+                            }
+                        })    
+                    }
+                    
+                    // res.send(tweets)
+                }) 
+            }
+        }
+    })
+}
+
+
+tweets.getFrequency = function(req,res){
+    Tweet.aggregate([
+        { "$group": {
+            "_id": {
+                 "year": { "$year": "$created_at" },
+                 "month":{ "$month": "$created_at" },
+                 "day": { "$dayOfMonth": "$created_at" },
+                 "hour": { "$hour": "$created_at" },
+                 "minute": { "$minute": "$created_at" },
+                 "second": { "$subtract": [
+                     { "$second": "$created_at" },
+                     { "$mod": [
+                         { "$second": "$created_at" },
+                         10
+                     ]}
+                 ]}
+            },
+            "count": { "$sum" : 1 }
+        }}
+    ],function(err,response){
+        res.send(response);
+    })
 }
 
 // "scripts": {
