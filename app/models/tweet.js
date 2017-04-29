@@ -19,6 +19,7 @@ var tweetSchema = new Schema({
 
     author_link: {type: String, default: '#'},
     tweet_link: {type: String, default: '#'},
+    profile_image_url: {type: String, default: ''},
     
     
     /*

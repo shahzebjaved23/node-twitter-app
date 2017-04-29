@@ -264,6 +264,7 @@ tweets.getTweetsByRest = function(req,res){
                 TwitterREST.get('search/tweets', { q: searchStringREST, count: 300}, function(error, tweets, response){
                     console.log(tweets.statuses.length)
                     tweets.statuses.forEach(function(tweet){
+                        console.log(tweet.user.profile_image_url)
                         var newTweet = new Tweet({
                             author: tweet.user.name,
                             tweet:{
@@ -272,8 +273,9 @@ tweets.getTweetsByRest = function(req,res){
                             },
                             created_at: tweet.created_at,
                             hashtags: tweet.entities.hashtags,
-                            author_link: tweet.entities.urls.url,
-                            tweet_link: tweet.entities.urls.expanded_url
+                            author_link: tweet.user.url,
+                            tweet_link: tweet.entities.urls.expanded_url,
+                            profile_image_url: tweet.user.profile_image_url
                         });
 
                         newTweet.save(function(err,data){
@@ -299,6 +301,7 @@ tweets.getTweetsByRest = function(req,res){
                     console.log(tweets.statuses.length);
                     if(tweets.statuses != null){
                         tweets.statuses.forEach(function(tweet){
+                            console.log(tweet.user.profile_image_url)
                             var newTweet = new Tweet({
                                 author: tweet.user.name,
                                 tweet:{
@@ -307,8 +310,9 @@ tweets.getTweetsByRest = function(req,res){
                                 },
                                 created_at: tweet.created_at,
                                 hashtags: tweet.entities.hashtags,
-                                author_link: tweet.entities.urls.url,
-                                tweet_link: tweet.entities.urls.expanded_url
+                                author_link: tweet.user.url,
+                                tweet_link: tweet.entities.urls.expanded_url,
+                                profile_image_url: tweet.user.profile_image_url
                             });
 
                             newTweet.save(function(err,data){
