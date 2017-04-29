@@ -346,17 +346,15 @@ tweets.getFrequency = function(req,res){
         { "$group": {
             "_id": {
                  "year": { "$year": "$created_at" },
-                 "month":{ "$month": "$created_at" },
-                 "day": { "$dayOfMonth": "$created_at" },
-                 "hour": { "$hour": "$created_at" },
-                 "minute": { "$minute": "$created_at" },
-                 "second": { "$subtract": [
-                     { "$second": "$created_at" },
-                     { "$mod": [
-                         { "$second": "$created_at" },
-                         10
-                     ]}
-                 ]}
+                 "month":{ "$month": "$created_at"},
+                 "day": { "$subtract": [
+                    {  "$dayOfMonth": "$created_at"  },
+                    { "$mod": [
+                         {  "$dayOfMonth": "$created_at"  },
+                         1
+                    ]}
+                 ]} 
+                    
             },
             "count": { "$sum" : 1 }
         }}
