@@ -10,6 +10,8 @@ var tweetSchema = new Schema({
 	*/
 	player: { type: Schema.ObjectId, ref: 'Player' },
     team: { type: Schema.ObjectId, ref: 'Team'},
+
+    twitter_id: {type: String, default: ""},
     
     
     /*

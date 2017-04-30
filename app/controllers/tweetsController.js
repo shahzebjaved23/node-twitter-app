@@ -260,12 +260,14 @@ tweets.getTweetsByRest = function(req,res){
             
             if(data.length > 0){
                 console.log("if")
-                searchStringREST = searchStringREST + " since : " + data[0].created_at;
-                TwitterREST.get('search/tweets', { q: searchStringREST, count: 300}, function(error, tweets, response){
+                searchStringREST = searchStringREST + " since_id:" + data[0].twitter_id;
+                console.log(data[0].created_at);
+                TwitterREST.get('search/tweets', { q: searchStringREST }, function(error, tweets, response){
                     console.log(tweets.statuses.length)
                     tweets.statuses.forEach(function(tweet){
                         console.log(tweet.user.profile_image_url)
                         var newTweet = new Tweet({
+                            twitter_id: tweet.id,
                             author: tweet.user.name,
                             tweet:{
                                 id: tweet.id,
@@ -287,7 +289,7 @@ tweets.getTweetsByRest = function(req,res){
                         }); 
                     })
 
-                    Tweet.find().exec(function(err,data){
+                    Tweet.find().sort({created_at: -1}).exec(function(err,data){
                         if(err){
                             console.log(err)
                         }else{
@@ -303,6 +305,7 @@ tweets.getTweetsByRest = function(req,res){
                         tweets.statuses.forEach(function(tweet){
                             console.log(tweet.user.profile_image_url)
                             var newTweet = new Tweet({
+                                twitter_id: tweet.id,
                                 author: tweet.user.name,
                                 tweet:{
                                     id: tweet.id,
@@ -324,7 +327,7 @@ tweets.getTweetsByRest = function(req,res){
                             }); 
                         })
 
-                        Tweet.find().exec(function(err,data){
+                        Tweet.find().sort({created_at: -1}).exec(function(err,data){
                             if(err){
                                 console.log(err)
                             }else{
