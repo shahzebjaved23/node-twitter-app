@@ -253,7 +253,7 @@ tweets.getTweetsByRest = function(req,res){
      */
 
 
-    Tweet.find().exec(function(err,data){
+    Tweet.find().sort({created_at: -1}).exec(function(err,data){
         if(err){
             console.log(err)
         }else{
