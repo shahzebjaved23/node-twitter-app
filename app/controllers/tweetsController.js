@@ -251,7 +251,8 @@ tweets.getTweetsByRest = function(req,res){
      * Twitter REST API, 
      * q: searchString, count: Number of tweets returned.
      */
-
+     
+     console.log(searchStringREST)
 
     Tweet.find().sort({created_at: -1}).exec(function(err,data){
         if(err){
@@ -260,8 +261,8 @@ tweets.getTweetsByRest = function(req,res){
             
             if(data.length > 0){
                 console.log("if")
-                // searchStringREST = searchStringREST + " since_id:" + data[data.length - 1].twitter_id;
                 
+
                 TwitterREST.get('search/tweets', { q: searchStringREST, since_id: data[0].twitter_id }, function(error, tweets, response){
                     
                     console.log(tweets.statuses.length)
