@@ -262,13 +262,17 @@ tweets.getTweetsByRest = function(req,res){
                 console.log("if")
                 searchStringREST = searchStringREST + " since_id:" + data[0].twitter_id;
                 console.log(data[0].created_at);
-                TwitterREST.get('search/tweets', { q: searchStringREST }, function(error, tweets, response){
+                TwitterREST.get('search/tweets', { q: searchStringREST, since_id: data[data.length - 1].twitter_id }, function(error, tweets, response){
                     console.log(tweets.statuses.length)
                     tweets.statuses.sort(function(a,b){
-                        return new Date(b.created_at) - new Date(a.created_at);
+                        return new Date(a.created_at) - new Date(b.created_at);
                     });
+
                     tweets.statuses.forEach(function(tweet){
-                        console.log(tweet.user.profile_image_url)
+                        console.log(tweet.created_at);
+                    })
+                    tweets.statuses.forEach(function(tweet){
+                        
                         var newTweet = new Tweet({
                             twitter_id: tweet.id,
                             author: tweet.user.name,
@@ -304,12 +308,19 @@ tweets.getTweetsByRest = function(req,res){
                 console.log("else")
                 TwitterREST.get('search/tweets', { q: searchStringREST, count: 300 }, function(error, tweets, response){
                     console.log(tweets.statuses.length);
-                    tweets.statuses.sort(function(a,b){
-                        return new Date(b.created_at) - new Date(a.created_at);
+                    var statuses = tweets.statuses.sort(function(a,b){
+                        return new Date(a.created_at) - new Date(b.created_at);
                     });
+
+                    statuses.forEach(function(status){
+                        console.log(status.created_at)
+                    })
+                    // tweets.statuses.forEach(function(tweet){
+                    //     console.log(tweet.created_at);
+                    // })
                     if(tweets.statuses != null){
                         tweets.statuses.forEach(function(tweet){
-                            console.log(tweet.user.profile_image_url)
+                            
                             var newTweet = new Tweet({
                                 twitter_id: tweet.id,
                                 author: tweet.user.name,
