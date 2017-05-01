@@ -262,7 +262,7 @@ tweets.getTweetsByRest = function(req,res){
                 console.log("if")
                 // searchStringREST = searchStringREST + " since_id:" + data[data.length - 1].twitter_id;
                 
-                TwitterREST.get('search/tweets', { q: searchStringREST, since_id: data[data.length - 1].twitter_id }, function(error, tweets, response){
+                TwitterREST.get('search/tweets', { q: searchStringREST, since_id: data[data.length].twitter_id }, function(error, tweets, response){
                     
                     console.log(tweets.statuses.length)
                     
@@ -271,7 +271,7 @@ tweets.getTweetsByRest = function(req,res){
                     });
 
                     statuses.forEach(function(tweet,index){
-                        if (index != 0){
+                        // if (index != 0){
                             var newTweet = new Tweet({
                                 twitter_id: tweet.id,
                                 author: tweet.user.name,
@@ -293,7 +293,7 @@ tweets.getTweetsByRest = function(req,res){
                                     // console.log(data)
                                 }
                             });    
-                        }
+                        // }
                             
                     })
 
