@@ -36,7 +36,10 @@ function listen () {
 }
 
 function connect () {
-  var options = { server: { socketOptions: { keepAlive: 1 } } };
+  var options = { 
+    server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
+    replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } } 
+  };
   return mongoose.connect("mongodb://root:password@ds123351.mlab.com:23351/nodetwitter", options).connection;
   // return mongoose.connect("mongodb://localhost/SoccerTransfer", options).connection;
 }
