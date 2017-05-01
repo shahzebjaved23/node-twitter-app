@@ -261,6 +261,10 @@ tweets.getTweetsByRest = function(req,res){
             if(data.length > 0){
                 console.log("if")
                 // searchStringREST = searchStringREST + " since_id:" + data[data.length - 1].twitter_id;
+
+                data.forEach(function(item){
+                    console.log(item.created_at);
+                })
                 
                 TwitterREST.get('search/tweets', { q: searchStringREST, since_id: data[data.length-1].twitter_id }, function(error, tweets, response){
                     
