@@ -262,7 +262,7 @@ tweets.getTweetsByRest = function(req,res){
                 console.log("if")
                 // searchStringREST = searchStringREST + " since_id:" + data[data.length - 1].twitter_id;
                 
-                TwitterREST.get('search/tweets', { q: searchStringREST, since_id: data[data.length].twitter_id }, function(error, tweets, response){
+                TwitterREST.get('search/tweets', { q: searchStringREST, since_id: data[data.length-1].twitter_id }, function(error, tweets, response){
                     
                     console.log(tweets.statuses.length)
                     
