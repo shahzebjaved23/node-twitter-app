@@ -271,7 +271,7 @@ tweets.getTweetsByRest = function(req,res){
                     });
 
                     statuses.forEach(function(tweet,index){
-                        // if (index != 0){
+                        if (index != 0){
                             var newTweet = new Tweet({
                                 twitter_id: tweet.id,
                                 author: tweet.user.name,
@@ -293,7 +293,7 @@ tweets.getTweetsByRest = function(req,res){
                                     // console.log(data)
                                 }
                             });    
-                        // }
+                        }
                             
                     })
 
