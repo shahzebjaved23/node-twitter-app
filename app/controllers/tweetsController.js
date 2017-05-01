@@ -261,39 +261,40 @@ tweets.getTweetsByRest = function(req,res){
             if(data.length > 0){
                 console.log("if")
                 searchStringREST = searchStringREST + " since_id:" + data[data.length - 1].twitter_id;
-                console.log(data[0].created_at);
                 TwitterREST.get('search/tweets', { q: searchStringREST, since_id: data[data.length - 1].twitter_id }, function(error, tweets, response){
+                    
                     console.log(tweets.statuses.length)
                     tweets.statuses.sort(function(a,b){
                         return new Date(a.created_at) - new Date(b.created_at);
                     });
 
-                    tweets.statuses.forEach(function(tweet){
-                        console.log(tweet.created_at);
-                    })
-                    tweets.statuses.forEach(function(tweet){
-                        
-                        var newTweet = new Tweet({
-                            twitter_id: tweet.id,
-                            author: tweet.user.name,
-                            tweet:{
-                                id: tweet.id,
-                                text: tweet.text,
-                            },
-                            created_at: tweet.created_at,
-                            hashtags: tweet.entities.hashtags,
-                            author_link: tweet.user.url,
-                            tweet_link: tweet.entities.urls.expanded_url,
-                            profile_image_url: tweet.user.profile_image_url
-                        });
+                    tweets.statuses.forEach(function(tweet,index){
 
-                        newTweet.save(function(err,data){
-                            if(err){
-                                console.log(err)
-                            }else{
-                                // console.log(data)
-                            }
-                        }); 
+                        if(index != 0){
+                            var newTweet = new Tweet({
+                                twitter_id: tweet.id,
+                                author: tweet.user.name,
+                                tweet:{
+                                    id: tweet.id,
+                                    text: tweet.text,
+                                },
+                                created_at: tweet.created_at,
+                                hashtags: tweet.entities.hashtags,
+                                author_link: tweet.user.url,
+                                tweet_link: tweet.entities.urls.expanded_url,
+                                profile_image_url: tweet.user.profile_image_url
+                            });
+
+                            newTweet.save(function(err,data){
+                                if(err){
+                                    console.log(err)
+                                }else{
+                                    // console.log(data)
+                                }
+                            });    
+                        }
+                        
+                         
                     })
 
                     Tweet.find().sort({created_at: -1}).exec(function(err,data){
