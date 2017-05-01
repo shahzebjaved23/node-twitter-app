@@ -264,11 +264,11 @@ tweets.getTweetsByRest = function(req,res){
                 TwitterREST.get('search/tweets', { q: searchStringREST, since_id: data[data.length - 1].twitter_id }, function(error, tweets, response){
                     
                     console.log(tweets.statuses.length)
-                    tweets.statuses.sort(function(a,b){
+                    var statuses = tweets.statuses.sort(function(a,b){
                         return new Date(a.created_at) - new Date(b.created_at);
                     });
 
-                    tweets.statuses.forEach(function(tweet,index){
+                    statuses.forEach(function(tweet,index){
 
                         if(index != 0){
                             var newTweet = new Tweet({
@@ -313,14 +313,11 @@ tweets.getTweetsByRest = function(req,res){
                         return new Date(a.created_at) - new Date(b.created_at);
                     });
 
-                    statuses.forEach(function(status){
-                        console.log(status.created_at)
-                    })
                     // tweets.statuses.forEach(function(tweet){
                     //     console.log(tweet.created_at);
                     // })
-                    if(tweets.statuses != null){
-                        tweets.statuses.forEach(function(tweet){
+                    if(statuses != null){
+                        statuses.forEach(function(tweet){
                             
                             var newTweet = new Tweet({
                                 twitter_id: tweet.id,
