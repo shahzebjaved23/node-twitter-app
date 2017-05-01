@@ -270,31 +270,31 @@ tweets.getTweetsByRest = function(req,res){
                         return new Date(a.created_at) - new Date(b.created_at);
                     });
 
-                    statuses.forEach(function(tweet){
+                    statuses.forEach(function(tweet,index){
+                        if (index != 0){
+                            var newTweet = new Tweet({
+                                twitter_id: tweet.id,
+                                author: tweet.user.name,
+                                tweet:{
+                                    id: tweet.id,
+                                    text: tweet.text,
+                                },
+                                created_at: tweet.created_at,
+                                hashtags: tweet.entities.hashtags,
+                                author_link: tweet.user.url,
+                                tweet_link: tweet.entities.urls.expanded_url,
+                                profile_image_url: tweet.user.profile_image_url
+                            });
 
-                        var newTweet = new Tweet({
-                            twitter_id: tweet.id,
-                            author: tweet.user.name,
-                            tweet:{
-                                id: tweet.id,
-                                text: tweet.text,
-                            },
-                            created_at: tweet.created_at,
-                            hashtags: tweet.entities.hashtags,
-                            author_link: tweet.user.url,
-                            tweet_link: tweet.entities.urls.expanded_url,
-                            profile_image_url: tweet.user.profile_image_url
-                        });
-
-                        newTweet.save(function(err,data){
-                            if(err){
-                                console.log(err)
-                            }else{
-                                // console.log(data)
-                            }
-                        });    
-                    
-                         
+                            newTweet.save(function(err,data){
+                                if(err){
+                                    console.log(err)
+                                }else{
+                                    // console.log(data)
+                                }
+                            });    
+                        }
+                            
                     })
 
                     Tweet.find().sort({created_at: -1}).exec(function(err,data){
