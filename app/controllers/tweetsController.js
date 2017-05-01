@@ -261,39 +261,39 @@ tweets.getTweetsByRest = function(req,res){
             if(data.length > 0){
                 console.log("if")
                 // searchStringREST = searchStringREST + " since_id:" + data[data.length - 1].twitter_id;
+                
                 TwitterREST.get('search/tweets', { q: searchStringREST, since_id: data[data.length - 1].twitter_id }, function(error, tweets, response){
                     
                     console.log(tweets.statuses.length)
+                    
                     var statuses = tweets.statuses.sort(function(a,b){
                         return new Date(a.created_at) - new Date(b.created_at);
                     });
 
-                    statuses.forEach(function(tweet,index){
+                    statuses.forEach(function(tweet){
 
-                        // if(index != 0){
-                            var newTweet = new Tweet({
-                                twitter_id: tweet.id,
-                                author: tweet.user.name,
-                                tweet:{
-                                    id: tweet.id,
-                                    text: tweet.text,
-                                },
-                                created_at: tweet.created_at,
-                                hashtags: tweet.entities.hashtags,
-                                author_link: tweet.user.url,
-                                tweet_link: tweet.entities.urls.expanded_url,
-                                profile_image_url: tweet.user.profile_image_url
-                            });
+                        var newTweet = new Tweet({
+                            twitter_id: tweet.id,
+                            author: tweet.user.name,
+                            tweet:{
+                                id: tweet.id,
+                                text: tweet.text,
+                            },
+                            created_at: tweet.created_at,
+                            hashtags: tweet.entities.hashtags,
+                            author_link: tweet.user.url,
+                            tweet_link: tweet.entities.urls.expanded_url,
+                            profile_image_url: tweet.user.profile_image_url
+                        });
 
-                            newTweet.save(function(err,data){
-                                if(err){
-                                    console.log(err)
-                                }else{
-                                    // console.log(data)
-                                }
-                            });    
-                        // }
-                        
+                        newTweet.save(function(err,data){
+                            if(err){
+                                console.log(err)
+                            }else{
+                                // console.log(data)
+                            }
+                        });    
+                    
                          
                     })
 
