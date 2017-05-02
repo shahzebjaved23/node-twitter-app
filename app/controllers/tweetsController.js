@@ -285,22 +285,19 @@ tweets.getTweetsFromDb = function(req,res){
 
 tweets.getFrequency = function(req,res){
     Tweet.aggregate([
-        { "$group": {
+        { 
+            "$group": {
             "_id": {
                  "year": { "$year": "$created_at" },
                  "month":{ "$month": "$created_at"},
-                 "day": { "$subtract": [
-                    {  "$dayOfMonth": "$created_at"  },
-                    { "$mod": [
-                         {  "$dayOfMonth": "$created_at"  },
-                         1
-                    ]}
-                 ]} 
-                    
+                 "day": { "$dayOfMonth": "$created_at" } 
             },
             "count": { "$sum" : 1 }
         }}
+        ,
+        {"$sort": { "_id.day": -1 }}
     ],function(err,response){
+        console.log(response)
         res.send(response);
     })
 }
