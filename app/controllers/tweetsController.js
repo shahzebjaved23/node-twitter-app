@@ -260,7 +260,7 @@ var searchDb = function(player,team,author,type,callback){
                 }       
             }            
         ]       
-    }).exec(function(err,data){
+    }).sort({created_at: -1}).exec(function(err,data){
         if(err){
             console.log(err)
         }else{
