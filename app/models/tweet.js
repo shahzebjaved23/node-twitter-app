@@ -12,27 +12,32 @@ var tweetSchema = new Schema({
     team: { type: Schema.ObjectId, ref: 'Team'},
 
     twitter_id: {type: String , default: ""},
+
+    // either stream or rest
+    tweet_type: { type: String, default: "rest"},
     
     
     /*
 		author of the tweet, screen_name of author account.
     */
-    author: { type: String, default: ''},
+    user: { 
+        id: { type: String, default: ""},
+        name: {type: String, default: ""},
+        screen_name: {type: String, default: ""},
+        url: { type: String, default: ""},
+        profile_image_url: {type: String, default: ""},
+        description: {type: String, default: ""}  
+    },
 
-    author_link: {type: String, default: '#'},
-    tweet_link: {type: String, default: '#'},
-    profile_image_url: {type: String, default: ''},
-    
-    
-    /*
-		tweet is an object that will contain:
-		tweet id, tweet text.
-    */
-    tweet: {},
-    
-    // hashtags within tweets is saved into array
-    hashtags: { type: [], default: '' },
-    
+    text: {type: String, default: ""},
+
+    entities:{
+        hashtags: {type: [], default: []},
+        urls:{
+            url: {type: String, default: "#"}
+        }
+    },
+
     // creation time of tweet as appears on Twitter
     created_at: { type: Date }
 });

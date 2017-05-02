@@ -6,6 +6,49 @@ const _ = require('lodash');
 
 var tweets = {};
 
+
+var saveTweetIntoDb = function(tweet,type){
+    console.log("inside the save tweets function");
+    
+    Tweet.find({twitter_id: tweet.id}).exec(function(err,data){
+        if(err){
+            console.log(err)
+        }else{
+            if (data.length == 0){
+                var newTweet = new Tweet(
+                    {
+                        tweet_type: type,
+                        twitter_id: tweet.id,
+                        text: tweet.text,
+                        user:{
+                            id: tweet.user.id,
+                            name: tweet.user.name,
+                            sereen_name: tweet.user.sereen_name,
+                            url: tweet.user.url,
+                            profile_image_url: tweet.user.profile_image_url,
+                            description: tweet.user.description
+                        },
+                        entities:{
+                            hashtags: tweet.entities.hashtags,
+                            urls:{
+                                url: tweet.entities.urls.url ? tweet.entities.urls.url : "#" 
+                            }
+                        },
+                        created_at: tweet.created_at
+                    }
+                )
+                
+                newTweet.save(function(err){
+                    if(err){
+                        console.log(err);
+                    }
+                })             
+            }
+        }
+    })
+   
+}
+
 /**
  * find all tweets in twitter REST API.
  *
@@ -37,35 +80,18 @@ function findTweetsByREST(player, team, author, max_id) {
         /*
          * Twitter REST API, 
          * q: searchString, count: Number of tweets returned.
-         */
-
-        var since;
-
-        Tweet.find().exec(function(err,data){
-            if(err){
-                console.log(err)
-            }else{
-                if(data[0] != null){
-                    since = data[0].created_at; 
-                    searchStringREST = searchStringREST + " since : " + since;
-                }
-            }
-        })
-
-        console.log(searchStringREST);
-
-        console.log(since)
-
+         */   
         TwitterREST.get('search/tweets', { q: searchStringREST, count: 300, since: since }, function(error, tweets, response) {
-            
             /*
              * Removing retweets from returned tweets to save memory,
              * and to avoid duplicates
              */
-            // _.remove(tweets.statuses, function(t) {
-            //     return (!!t.retweeted_status)
-            // });
-
+            if(tweets.statuses){
+                _.remove(tweets.statuses, function(t) {
+                    return (!!t.retweeted_status)
+                });    
+            }
+            
             return resolve(tweets);
         });
         
@@ -81,7 +107,7 @@ function findTweetsByREST(player, team, author, max_id) {
  */
 var TweetsFromStream = [];
 
-function findTweetsBySTREAM(player, team, author) {
+function findTweetsBySTREAM(player, team, author,callback) {
 
     var searchStringSTREAM = player + ' ' + team;
 
@@ -99,20 +125,17 @@ function findTweetsBySTREAM(player, team, author) {
          * Close Connection After 5mins. and return all found tweets.
          */
         setTimeout(() => {
-
             TwitterSTREAM.close();
+            callback(TweetsFromStream);
             return TweetsFromStream;
-
-        }, 10 * 1000); //time in mills.
-
-        // console.log(tweet.id_str, tweet.user.screen_name, tweet.text);
+        }, 1 * 1000); //time in mills.
 
         /* 
          * using lodash conforms method to check if the returned tweet
          * matches the search criteria we need for player, team..
          *
          */
-        var   found    = _.conformsTo(tweet, {
+        var found = _.conformsTo(tweet, {
             /*
              *  matching only tweets that have player name, team name
              *  and one of the search criteria words : 'contract, offer, ..etc.'
@@ -125,7 +148,9 @@ function findTweetsBySTREAM(player, team, author) {
             }
         });
 
-        if (found) { TweetsFromStream.push(tweet); }
+        if (found) { 
+            TweetsFromStream.push(tweet)
+        }
     });
 
     TwitterSTREAM.on('connection success', function(uri) {
@@ -146,92 +171,31 @@ function findTweetsBySTREAM(player, team, author) {
     });
 }
 
-tweets.find = function(req, res) {
+tweets.getTweetsFromStream = function(req,res){
+    var team = req.query.team ? req.query.team : "";
+    var player = req.query.player ? req.query.player : "";
+    var author = req.query.author ? req.query.author : "";
 
-    var player = req.query.player;
-    var team = req.query.team;
-    var author = req.query.author || '';
+    console.log("player = "+ player);
+    console.log("team = "+ team);
+    console.log("author = "+ author);
 
-
-
-    // var playerModel = new Player();
-
-    // var tweet = new Tweet({author: author,player: });
-
-
-    
-    /* Each request retrieve max 100 tweets,
-     * Here you get multiple requests to get more than 100 tweets if available.
-     */
-    findTweetsByREST(player, team, author).then((tweets) => {
-        // findTweetsByREST(player, team, author, tweets.search_metadata.max_id).then((next_tweets) => {
-        //     var allTweets = tweets.statuses.concat(next_tweets.statuses);
-        //     console.log("tweets length: ", allTweets.length);
-        //     res.send(allTweets);
-        // });
-        // tweets.statuses.forEach(function(tweet){
-        //     Tweet.insert()
-        // })
-
-        
-        // tweets.statuses.forEach(function(tweet){
-        //     var newTweet = new Tweet({
-        //         author: tweet.user.name,
-        //         tweet:{
-        //             id: tweet.id,
-        //             text: tweet.text,
-        //         },
-        //         created_at: tweet.created_at,
-        //         hashtags: tweet.entities.hashtags,
-        //         author_link: tweet.entities.urls.url,
-        //         tweet_link: tweet.entities.urls.expanded_url
-        //     });
-
-        //     newTweet.save(function(err,data){
-        //         if(err){
-        //             console.log(err)
-        //         }else{
-        //             console.log(data)
-        //         }
-        //     }); 
-        // })
-
-        Tweet.find().exec(function(err,ntweets){
-            if(err){
-                console.log(err)
-            }else{
-                if(ntweets.length > 0){
-                    res.send(ntweets)
-                }
-                // else{
-                //     res.send(tweets);
-                // }
-            }
+    findTweetsBySTREAM(player, team, author,function(tweets){
+        console.log(tweets);
+        tweets.forEach(function(tweet){
+            saveTweetIntoDb(tweet,'stream')
         })
-
-         // res.send(tweets);
-        
+        res.send(tweets);    
     });
 
-
-    // insert the tweets and insert into the db
-    // get the next tweets after the created_at of the last tweet,
-    // uset he aggregation framework of the mongodb for getting the frequesncies
-    // make sure the db and the api can be adequately queried 
-
-
-
-
-
-    //findTweetsBySTREAM(player, team, author);
-
+    
 }
 
 tweets.getTweetsByRest = function(req,res){
 
-    var player = req.query.player;
-    var team = req.query.team;
-    var author = req.query.author;
+    var player = req.query.player ? req.query.player : "";
+    var team = req.query.team ? req.query.team : "";
+    var author = req.query.author ? req.query.author : "";
 
     var matchWords = 'contract OR transfer OR offer OR bargain OR signs OR deal OR buy OR purchase OR trade OR accept OR move OR moving OR rumours';
 
@@ -246,119 +210,78 @@ tweets.getTweetsByRest = function(req,res){
     if (~team.search("@")) { team = team.split('@')[1]; searchStringREST = `from:${team} \"${player}\" ${matchWords}` };
     if (~author.search("@")) { author = author.split('@')[1]; searchStringREST = `from:${author} \"${player}\" \"${team}\" ${matchWords}` };
 
-    console.log(searchStringREST)
     /*
      * Twitter REST API, 
      * q: searchString, count: Number of tweets returned.
      */
-     
-     console.log(searchStringREST)
 
-    Tweet.find().sort({created_at: -1}).exec(function(err,data){
-        if(err){
-            console.log(err)
+
+    TwitterREST.get('search/tweets', { q: searchStringREST , count: 300}, function(error, tweets, response){
+         
+        console.log(tweets.statuses.length)
+
+        if (tweets.statuses) {
+            tweets.statuses.forEach(function(tweet){
+                saveTweetIntoDb(tweet,'rest')
+            })
+
+            console.log(tweets.statuses.length);
+
+            res.send(tweets.statuses)    
         }else{
-            
-            if(data.length > 0){
-                console.log("if")
-                
-
-                TwitterREST.get('search/tweets', { q: searchStringREST, since_id: data[0].twitter_id }, function(error, tweets, response){
-                    
-                    console.log(tweets.statuses.length)
-                    
-                    var statuses = tweets.statuses.sort(function(a,b){
-                        return new Date(a.created_at) - new Date(b.created_at);
-                    });
-
-                    statuses.forEach(function(tweet,index){
-                        if (index != 0){
-                            var newTweet = new Tweet({
-                                twitter_id: tweet.id,
-                                author: tweet.user.name,
-                                tweet:{
-                                    id: tweet.id,
-                                    text: tweet.text,
-                                },
-                                created_at: tweet.created_at,
-                                hashtags: tweet.entities.hashtags,
-                                author_link: tweet.user.url,
-                                tweet_link: tweet.entities.urls.expanded_url,
-                                profile_image_url: tweet.user.profile_image_url
-                            });
-
-                            newTweet.save(function(err,data){
-                                if(err){
-                                    console.log(err)
-                                }else{
-                                    // console.log(data)
-                                }
-                            });    
-                        }
-                            
-                    })
-
-                    Tweet.find().sort({created_at: -1}).exec(function(err,data){
-                        if(err){
-                            console.log(err)
-                        }else{
-                            res.send(data)        
-                        }
-                    })
-                }) 
-            }else{
-                console.log("else")
-                TwitterREST.get('search/tweets', { q: searchStringREST, count: 300 }, function(error, tweets, response){
-                    console.log(tweets.statuses.length);
-                    var statuses = tweets.statuses.sort(function(a,b){
-                        return new Date(a.created_at) - new Date(b.created_at);
-                    });
-
-                    // tweets.statuses.forEach(function(tweet){
-                    //     console.log(tweet.created_at);
-                    // })
-                    if(statuses != null){
-                        statuses.forEach(function(tweet){
-                            
-                            var newTweet = new Tweet({
-                                twitter_id: tweet.id,
-                                author: tweet.user.name,
-                                tweet:{
-                                    id: tweet.id,
-                                    text: tweet.text,
-                                },
-                                created_at: tweet.created_at,
-                                hashtags: tweet.entities.hashtags,
-                                author_link: tweet.user.url,
-                                tweet_link: tweet.entities.urls.expanded_url,
-                                profile_image_url: tweet.user.profile_image_url
-                            });
-
-                            newTweet.save(function(err,data){
-                                if(err){
-                                    console.log(err)
-                                }else{
-                                    // console.log(data)
-                                }
-                            }); 
-                        })
-
-                        Tweet.find().sort({created_at: -1}).exec(function(err,data){
-                            if(err){
-                                console.log(err)
-                            }else{
-                                res.send(data)        
-                            }
-                        })    
-                    }
-                    
-                    // res.send(tweets)
-                }) 
-            }
+            res.send("")
         }
+        
     })
 }
 
+var searchDb = function(player,team,author,type,callback){
+    console.log(RegExp(author));
+
+    Tweet.find({
+        $and:[
+            {tweet_type: type },
+            {text: 
+                {
+                    $regex: new RegExp(player),
+                    $options: 'i'
+                }
+            },
+            {text: 
+                {
+                    $regex: new RegExp(team), 
+                    $options: 'i'
+                }
+            },
+            {"user.name": 
+                {
+                    $regex: new RegExp(author),
+                    $options: 'i'
+                }       
+            }            
+        ]       
+    }).exec(function(err,data){
+        if(err){
+            console.log(err)
+        }else{
+            callback(data)
+        }
+    })
+
+}
+
+tweets.getTweetsFromDb = function(req,res){
+    var player = req.query.player ? req.query.player : "";
+    var team = req.query.team ? req.query.team : "";
+    var author = req.query.author ? req.query.author : "";
+    var type = req.query.type ? req.query.type : "rest";
+
+    var tweets = searchDb(player,team,author,type,function(tweets){
+        res.send(tweets);
+    });
+    
+
+}
 
 tweets.getFrequency = function(req,res){
     Tweet.aggregate([
@@ -381,11 +304,5 @@ tweets.getFrequency = function(req,res){
         res.send(response);
     })
 }
-
-// "scripts": {
-  //   "start": "./node_modules/.bin/cross-env NODE_ENV=production ./node_modules/.bin/nodemon server.js",
-  //   "debug": "./node_modules/.bin/cross-env NODE_ENV=development ./node_modules/.bin/nodemon --debug server.js",
-  //   "test": "./node_modules/.bin/cross-env NODE_ENV=test ./node_modules/.bin/babel-tape-runner test/test-*.js"
-  // },
 
 module.exports = tweets;
