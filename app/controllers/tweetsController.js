@@ -3,6 +3,14 @@ const Tweet = mongoose.model('Tweet');
 const TwitterREST = require('../../config/twitter').REST;
 const TwitterSTREAM = require('../../config/twitter').STREAM;
 const _ = require('lodash');
+var io = require('../../server').io;
+
+var socket;
+
+io.on('connection', function(s){
+  console.log('a user connected');
+  socket = s;
+});
 
 var tweets = {};
 
@@ -50,55 +58,6 @@ var saveTweetIntoDb = function(tweet,type){
 }
 
 /**
- * find all tweets in twitter REST API.
- *
- * @param {String} player name or hashtag, or handle.
- * @param {String} team name or hashtag, or handle.
- * @param {String} author name or hashtag, or handle.
- * @param {String} max_id is the id of latest tweet returned
- *
- */
-function findTweetsByREST(player, team, author, max_id) {
-
-    return new Promise(function(resolve, reject) {
-
-        // words used to match with query to twitter using OR operator
-        var matchWords = 'contract OR transfer OR offer OR bargain OR signs OR deal OR buy OR purchase OR trade OR accept OR move OR moving OR rumours';
-
-        // the query string to twitter, ex. ' "Rooney" "#manutd" contract OR transfer..'
-        var searchStringREST = `\"${player}\" \"${team}\" ${matchWords}`;
-
-        /* 
-         *  searching by player, team, or author twitter handles.
-         *  appending 'from:' filter to search string to get tweets from given account handles.
-         */
-        if (~player.search("@")) { player = player.split('@')[1]; searchStringREST = `from:${player} \"${team}\" ${matchWords}` };
-        if (~team.search("@")) { team = team.split('@')[1]; searchStringREST = `from:${team} \"${player}\" ${matchWords}` };
-        if (~author.search("@")) { author = author.split('@')[1]; searchStringREST = `from:${author} \"${player}\" \"${team}\" ${matchWords}` };
-
-        console.log(searchStringREST)
-        /*
-         * Twitter REST API, 
-         * q: searchString, count: Number of tweets returned.
-         */   
-        TwitterREST.get('search/tweets', { q: searchStringREST, count: 300, since: since }, function(error, tweets, response) {
-            /*
-             * Removing retweets from returned tweets to save memory,
-             * and to avoid duplicates
-             */
-            if(tweets.statuses){
-                _.remove(tweets.statuses, function(t) {
-                    return (!!t.retweeted_status)
-                });    
-            }
-            
-            return resolve(tweets);
-        });
-        
-    });
-}
-
-/**
  * find all tweets in twitter STREAM API.
  *
  * @param {String} player name.
@@ -107,7 +66,7 @@ function findTweetsByREST(player, team, author, max_id) {
  */
 var TweetsFromStream = [];
 
-function findTweetsBySTREAM(player, team, author,callback) {
+function findTweetsBySTREAM(player, team, author) {
 
     var searchStringSTREAM = player + ' ' + team;
 
@@ -120,15 +79,6 @@ function findTweetsBySTREAM(player, team, author,callback) {
     });
 
     TwitterSTREAM.on('data', function(tweet) {
-
-        /* 
-         * Close Connection After 5mins. and return all found tweets.
-         */
-        setTimeout(() => {
-            TwitterSTREAM.close();
-            callback(TweetsFromStream);
-            return TweetsFromStream;
-        }, 1 * 1000); //time in mills.
 
         /* 
          * using lodash conforms method to check if the returned tweet
@@ -149,7 +99,13 @@ function findTweetsBySTREAM(player, team, author,callback) {
         });
 
         if (found) { 
-            TweetsFromStream.push(tweet)
+            console.log("inside stream tweet found")
+            if(TweetsFromStream.indexOf(tweet) == -1){
+                TweetsFromStream.push(tweet);
+                console.log(tweet);
+                socket.emit("tweet",{tweet: tweet});    
+            }
+            
         }
     });
 
@@ -171,31 +127,30 @@ function findTweetsBySTREAM(player, team, author,callback) {
     });
 }
 
-tweets.getTweetsFromStream = function(req,res){
-    var team = req.query.team ? req.query.team : "";
-    var player = req.query.player ? req.query.player : "";
-    var author = req.query.author ? req.query.author : "";
+// tweets.getTweetsFromStream = function(req,res){
+//     var team = req.query.team ? req.query.team : "";
+//     var player = req.query.player ? req.query.player : "";
+//     var author = req.query.author ? req.query.author : "";
 
-    console.log("player = "+ player);
-    console.log("team = "+ team);
-    console.log("author = "+ author);
+//     findTweetsBySTREAM(player, team, author);
+// }
 
-    findTweetsBySTREAM(player, team, author,function(tweets){
-        console.log(tweets);
-        tweets.forEach(function(tweet){
-            saveTweetIntoDb(tweet,'stream')
-        })
-        res.send(tweets);    
-    });
-
-    
-}
-
+/**
+ * find all tweets in twitter REST API.
+ *
+ * @param {String} player name or hashtag, or handle.
+ * @param {String} team name or hashtag, or handle.
+ * @param {String} author name or hashtag, or handle.
+ * @param {String} max_id is the id of latest tweet returned
+ *
+ */
 tweets.getTweetsByRest = function(req,res){
 
     var player = req.query.player ? req.query.player : "";
     var team = req.query.team ? req.query.team : "";
     var author = req.query.author ? req.query.author : "";
+
+     findTweetsBySTREAM(player, team, author);
 
     var matchWords = 'contract OR transfer OR offer OR bargain OR signs OR deal OR buy OR purchase OR trade OR accept OR move OR moving OR rumours';
 
@@ -295,7 +250,7 @@ tweets.getFrequency = function(req,res){
             "count": { "$sum" : 1 }
         }}
         ,
-        {"$sort": { "_id.day": -1, "_id.month": -1 }}
+        {"$sort": { "_id.month": 1 }}
     ],function(err,response){
         console.log(response)
         res.send(response);

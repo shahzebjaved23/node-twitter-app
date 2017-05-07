@@ -11,8 +11,11 @@ const config = require('./config');
 const models = join(__dirname, 'app/models');
 const port = process.env.PORT || 5000;
 const app = express();
+var http = require('http').Server(app);
+var io = require('socket.io').listen(http);
 
 module.exports = app;
+module.exports.io = io;
 
 // Bootstrap models
 fs.readdirSync(models)
@@ -31,7 +34,7 @@ connect()
 
 function listen () {
   if (app.get('env') === 'test') return;
-  app.listen(port);
+  http.listen(port);
   console.log('Express app started on port ' + port);
 }
 

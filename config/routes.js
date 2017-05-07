@@ -5,7 +5,9 @@ const qs = require('querystring'),
     config = require('.'),
     playersController = require('../app/controllers/playersController'),
     teamsController = require('../app/controllers/teamsController'),
-    tweetsController = require('../app/controllers/tweetsController');
+    tweetsController = require('../app/controllers/tweetsController'),
+    facebookController = require("../app/controllers/facebookContoller");
+
 
 module.exports = function(app) {
 
@@ -21,7 +23,9 @@ module.exports = function(app) {
 
     app.get('/getTweetsFromDb',tweetsController.getTweetsFromDb)
 
-    app.get('/getTweetsFromStream',tweetsController.getTweetsFromStream)
+    app.get('/test',facebookController.test);
+
+    // app.get('/getTweetsFromStream',tweetsController.getTweetsFromStream)
 
     app.get('/get_twitter_bearer_token', function(req, res) {
         var consumer_key_base64 = config.twitter.consumer_key;
