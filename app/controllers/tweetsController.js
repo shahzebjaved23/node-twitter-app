@@ -65,6 +65,8 @@ var saveTweetIntoDb = function(tweet,type){
  * @param {String} author name.
  *
  */
+var TweetsFromStream = [];
+
 function findTweetsBySTREAM(player, team, author) {
 
     var searchStringSTREAM = player + ' ' + team;
@@ -73,9 +75,11 @@ function findTweetsBySTREAM(player, team, author) {
      * Twitter STREAM API, 
      * path: 'statuses/filter', track: to track tweets that match player or team name.
      */
-    TwitterSTREAM.stream('statuses/filter', {
+    var stream = TwitterSTREAM.stream('statuses/filter', {
         track: searchStringSTREAM
     });
+
+    console.log(stream);
 
     TwitterSTREAM.on('data', function(tweet) {
 
@@ -126,13 +130,6 @@ function findTweetsBySTREAM(player, team, author) {
     });
 }
 
-// tweets.getTweetsFromStream = function(req,res){
-//     var team = req.query.team ? req.query.team : "";
-//     var player = req.query.player ? req.query.player : "";
-//     var author = req.query.author ? req.query.author : "";
-
-//     findTweetsBySTREAM(player, team, author);
-// }
 
 /**
  * find all tweets in twitter REST API.
@@ -149,7 +146,8 @@ tweets.getTweetsByRest = function(req,res){
     var team = req.query.team ? req.query.team : "";
     var author = req.query.author ? req.query.author : "";
 
-     findTweetsBySTREAM(player, team, author);
+    
+    findTweetsBySTREAM(player, team, author);
 
     var matchWords = 'contract OR transfer OR offer OR bargain OR signs OR deal OR buy OR purchase OR trade OR accept OR move OR moving OR rumours';
 
