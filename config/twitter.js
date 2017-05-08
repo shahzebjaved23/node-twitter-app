@@ -21,14 +21,6 @@ const keys = {
     bearer_token: process.env.BEARER_TOKEN
 }
 
-// const keys = {
-//     consumer_key: process.env.CONSUMER_KEY,
-//     consumer_secret: process.env.CONSUMER_SECRET,
-//     token: process.env.token,
-//     token_secret: process.env.token_secret,
-//     bearer_token: process.env.bearer_token
-// };
-
 module.exports = {
     REST: new twitterRest(keys),
     STREAM: new twitterStream(keys, [true, { gzip: true }])

@@ -5,8 +5,7 @@ const qs = require('querystring'),
     config = require('.'),
     playersController = require('../app/controllers/playersController'),
     teamsController = require('../app/controllers/teamsController'),
-    tweetsController = require('../app/controllers/tweetsController'),
-    facebookController = require("../app/controllers/facebookContoller");
+    tweetsController = require('../app/controllers/tweetsController');
 
 
 module.exports = function(app) {
@@ -15,18 +14,12 @@ module.exports = function(app) {
         res.json({ API: 'twitter' });
     });
 
-    // app.get('/find', tweetsController.find);
-
     app.get('/frequency',tweetsController.getFrequency);
 
     app.get('/getTweetsByRest',tweetsController.getTweetsByRest);
 
     app.get('/getTweetsFromDb',tweetsController.getTweetsFromDb)
-
-    app.get('/test',facebookController.test);
-
-    // app.get('/getTweetsFromStream',tweetsController.getTweetsFromStream)
-
+   
     app.get('/get_twitter_bearer_token', function(req, res) {
         var consumer_key_base64 = config.twitter.consumer_key;
         var consumer_secret_base64 = config.twitter.consumer_secret;

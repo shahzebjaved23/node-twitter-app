@@ -62,10 +62,9 @@ var saveTweetIntoDb = function(tweet,type){
  *
  * @param {String} player name.
  * @param {String} team name.
+ * @param {String} author name.
  *
  */
-var TweetsFromStream = [];
-
 function findTweetsBySTREAM(player, team, author) {
 
     var searchStringSTREAM = player + ' ' + team;
@@ -101,7 +100,7 @@ function findTweetsBySTREAM(player, team, author) {
         if (found) { 
             console.log("inside stream tweet found")
             if(TweetsFromStream.indexOf(tweet) == -1){
-                TweetsFromStream.push(tweet);
+                saveTweetIntoDb(tweet,'stream');
                 console.log(tweet);
                 socket.emit("tweet",{tweet: tweet});    
             }
