@@ -79,8 +79,6 @@ function findTweetsBySTREAM(player, team, author) {
         track: searchStringSTREAM
     });
 
-    console.log(stream);
-
     TwitterSTREAM.on('data', function(tweet) {
 
         /* 
@@ -142,9 +140,11 @@ function findTweetsBySTREAM(player, team, author) {
  */
 tweets.getTweetsByRest = function(req,res){
 
-    var player = req.query.player ? req.query.player : "";
-    var team = req.query.team ? req.query.team : "";
-    var author = req.query.author ? req.query.author : "";
+    var player = req.query.player ? req.query.player : "messi";
+    var team = req.query.team ? req.query.team : "barcelona";
+    var author = req.query.author ? req.query.author : "football-news";
+    var player_team_op = req.query.player_team_op;
+    var team_author_op = req.query.team_author_op;
 
     
     findTweetsBySTREAM(player, team, author);
@@ -152,31 +152,44 @@ tweets.getTweetsByRest = function(req,res){
     var matchWords = 'contract OR transfer OR offer OR bargain OR signs OR deal OR buy OR purchase OR trade OR accept OR move OR moving OR rumours';
 
     // the query string to twitter, ex. ' "Rooney" "#manutd" contract OR transfer..'
-    var searchStringREST = `\"${player}\" \"${team}\" ${matchWords}`;
 
     /* 
-     *  searching by player, team, or author twitter handles.
-     *  appending 'from:' filter to search string to get tweets from given account handles.
-     */
-    if (~player.search("@")) { player = player.split('@')[1]; searchStringREST = `from:${player} \"${team}\" ${matchWords}` };
-    if (~team.search("@")) { team = team.split('@')[1]; searchStringREST = `from:${team} \"${player}\" ${matchWords}` };
-    if (~author.search("@")) { author = author.split('@')[1]; searchStringREST = `from:${author} \"${player}\" \"${team}\" ${matchWords}` };
+    *  searching by player, team, or author twitter handles.
+    *  appending 'from:' filter to search string to get tweets from given account handles.
+    */
+
+    var searchStringREST = "";
+
+    player = player.split(' ').join(' OR ');
+    team = team.split(' ').join(' OR ');
+    author = author.split(' ').join(' OR ');
+
+    if(player_team_op == "AND" && team_author_op == "AND"){
+        searchStringREST = player+" "+team+" "+"from:"+author+" "+matchWords ;
+    }else if(player_team_op == "OR" && team_author_op == "AND"){
+        searchStringREST = player+" OR "+team+" "+"from:"+author+" "+matchWords ;
+    }else if(player_team_op == "AND" && team_author_op == "OR"){
+        searchStringREST = player+" "+team+" OR "+"from:"+author+" "+matchWords ;
+    }else if(player_team_op == "OR" && team_author_op == "OR"){
+        searchStringREST = player+" OR "+team+" OR "+"from:"+author+" "+matchWords ;
+    }
+
+    console.log(searchStringREST);
 
     /*
      * Twitter REST API, 
      * q: searchString, count: Number of tweets returned.
      */
 
-
     TwitterREST.get('search/tweets', { q: searchStringREST , count: 300}, function(error, tweets, response){
-         
-        console.log(tweets.statuses.length)
+       
+
+       // console.log(tweets.statuses.length)
 
         if (tweets.statuses) {
             tweets.statuses.forEach(function(tweet){
                 saveTweetIntoDb(tweet,'rest')
             })
-
             console.log(tweets.statuses.length);
 
             res.send(tweets.statuses)    
