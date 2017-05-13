@@ -4,6 +4,7 @@ const TwitterREST = require('../../config/twitter').REST;
 const TwitterSTREAM = require('../../config/twitter').STREAM;
 const _ = require('lodash');
 var io = require('../../server').io;
+var http = require ('http');
 
 var socket;
 
@@ -18,15 +19,16 @@ var tweets = {};
 var saveTweetIntoDb = function(tweet,type){
     console.log("inside the save tweets function");
     
-    Tweet.find({twitter_id: tweet.id}).exec(function(err,data){
+    Tweet.find({id: tweet.id}).exec(function(err,data){
         if(err){
             console.log(err)
         }else{
             if (data.length == 0){
+               
                 var newTweet = new Tweet(
                     {
                         tweet_type: type,
-                        twitter_id: tweet.id,
+                        id: tweet.id,
                         text: tweet.text,
                         user:{
                             id: tweet.user.id,
@@ -50,7 +52,14 @@ var saveTweetIntoDb = function(tweet,type){
                     if(err){
                         console.log(err);
                     }
-                })             
+
+                    console.log("tweet saved");
+
+                    if(type == "stream"){
+                        console.log(tweet);
+                        socket.emit("tweet",{tweet: tweet});
+                    }  
+                })           
             }
         }
     })
@@ -79,6 +88,8 @@ function findTweetsBySTREAM(player, team, author) {
         track: searchStringSTREAM
     });
 
+    console.log(TwitterSTREAM)
+
     TwitterSTREAM.on('data', function(tweet) {
 
         /* 
@@ -102,9 +113,7 @@ function findTweetsBySTREAM(player, team, author) {
         if (found) { 
             console.log("inside stream tweet found")
             if(TweetsFromStream.indexOf(tweet) == -1){
-                saveTweetIntoDb(tweet,'stream');
-                console.log(tweet);
-                socket.emit("tweet",{tweet: tweet});    
+                saveTweetIntoDb(tweet,'stream');    
             }
             
         }
@@ -140,8 +149,8 @@ function findTweetsBySTREAM(player, team, author) {
  */
 tweets.getTweetsByRest = function(req,res){
 
-    var player = req.query.player ? req.query.player : "messi";
-    var team = req.query.team ? req.query.team : "barcelona";
+    var player = req.query.player ? req.query.player : "";
+    var team = req.query.team ? req.query.team : "";
     var author = req.query.author ? req.query.author : "football-news";
     var player_team_op = req.query.player_team_op;
     var team_author_op = req.query.team_author_op;
@@ -184,9 +193,21 @@ tweets.getTweetsByRest = function(req,res){
     TwitterREST.get('search/tweets', { q: searchStringREST , count: 300}, function(error, tweets, response){
        
 
-       // console.log(tweets.statuses.length)
+       // console.log(tweets.statuses)
 
-        if (tweets.statuses) {
+        
+
+       // tweets.statuses.forEach(function(tweet){
+       //      var options = {
+       //        host: 'https://publish.twitter.com',
+       //        path: "/oembed?https://twitter.com/"+tweet.user.screen_name+"/status/"+tweet.id
+       //      };
+       //      http.get(options,function(resp){
+       //          console.log(resp)
+       //      })
+       // })
+
+        if (tweets.statuses != null) {
             tweets.statuses.forEach(function(tweet){
                 saveTweetIntoDb(tweet,'rest')
             })
@@ -200,12 +221,11 @@ tweets.getTweetsByRest = function(req,res){
     })
 }
 
-var searchDb = function(player,team,author,type,callback){
+var searchDb = function(player,team,author,player_team_op,team_author_op,callback){
     console.log(RegExp(author));
 
-    Tweet.find({
+      Tweet.find({
         $and:[
-            {tweet_type: type },
             {text: 
                 {
                     $regex: new RegExp(player),
@@ -239,9 +259,8 @@ tweets.getTweetsFromDb = function(req,res){
     var player = req.query.player ? req.query.player : "";
     var team = req.query.team ? req.query.team : "";
     var author = req.query.author ? req.query.author : "";
-    var type = req.query.type ? req.query.type : "rest";
-
-    var tweets = searchDb(player,team,author,type,function(tweets){
+    
+    var tweets = searchDb(player,team,author,function(tweets){
         res.send(tweets);
     });
     
@@ -249,7 +268,37 @@ tweets.getTweetsFromDb = function(req,res){
 }
 
 tweets.getFrequency = function(req,res){
+    var player = req.query.player ? req.query.player : "";
+    var team = req.query.team ? req.query.team : "";
+    var author = req.query.author ? req.query.author : "football-news";
+    var player_team_op = req.query.player_team_op;
+    var team_author_op = req.query.team_author_op;
+
     Tweet.aggregate([
+        {
+            $match:{
+                $and:[
+                {text: 
+                    {
+                        $regex: new RegExp(player),
+                        $options: 'i'
+                    }
+                },
+                {text: 
+                    {
+                        $regex: new RegExp(team), 
+                        $options: 'i'
+                    }
+                },
+                {"user.name": 
+                    {
+                        $regex: new RegExp(author),
+                        $options: 'i'
+                    }       
+                }            
+            ]
+            }
+        },
         { 
             "$group": {
             "_id": {
