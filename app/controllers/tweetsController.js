@@ -272,7 +272,7 @@ tweets.getTweetsFromDb = function(req,res){
     var team = req.query.team ? req.query.team : "";
     var author = req.query.author ? req.query.author : "";
     
-    var tweets = searchDb(player,team,author,function(tweets){
+    var tweets = searchDb(player,team,author,null,null,function(tweets){
         res.send(tweets);
     });
     
@@ -286,10 +286,15 @@ tweets.getFrequency = function(req,res){
     var player_team_op = req.query.player_team_op;
     var team_author_op = req.query.team_author_op;
 
+
+    console.log(player)
+    console.log(team)
+    console.log(author)
+
     Tweet.aggregate([
         {
             $match:{
-                $and:[
+                $or:[
                 {text: 
                     {
                         $regex: new RegExp(player),
@@ -323,7 +328,8 @@ tweets.getFrequency = function(req,res){
         ,
         {"$sort": { "_id.month": 1 }}
     ],function(err,response){
-        console.log(response)
+        console.log("getFrequency:")
+        console.log(response);
         res.send(response);
     })
 }
