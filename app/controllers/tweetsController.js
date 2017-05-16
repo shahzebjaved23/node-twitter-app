@@ -4,7 +4,7 @@ const TwitterREST = require('../../config/twitter').REST;
 const TwitterSTREAM = require('../../config/twitter').STREAM;
 const _ = require('lodash');
 var io = require('../../server').io;
-var http = require ('http');
+var https = require ('https');
 
 var socket;
 
@@ -16,8 +16,8 @@ io.on('connection', function(s){
 var tweets = {};
 
 
-var saveTweetIntoDb = function(tweet,type){
-    console.log("inside the save tweets function");
+var saveTweetIntoDb = function(tweet,type,callback){
+    // console.log("inside the save tweets function");
     
     Tweet.find({id: tweet.id}).exec(function(err,data){
         if(err){
@@ -36,7 +36,8 @@ var saveTweetIntoDb = function(tweet,type){
                             sereen_name: tweet.user.sereen_name,
                             url: tweet.user.url,
                             profile_image_url: tweet.user.profile_image_url,
-                            description: tweet.user.description
+                            description: tweet.user.description,
+                            profile_background_image_url: tweet.user.profile_background_image_url
                         },
                         entities:{
                             hashtags: tweet.entities.hashtags,
@@ -51,14 +52,18 @@ var saveTweetIntoDb = function(tweet,type){
                 newTweet.save(function(err){
                     if(err){
                         console.log(err);
+                    }else{
+                        console.log("tweet saved");
+
+                        if(type == "stream"){
+                            console.log("tweet emitted");
+                            socket.emit("tweet",{tweet: tweet});
+                        } 
+
+                        callback(tweet);    
                     }
 
-                    console.log("tweet saved");
-
-                    if(type == "stream"){
-                        console.log(tweet);
-                        socket.emit("tweet",{tweet: tweet});
-                    }  
+                    
                 })           
             }
         }
@@ -88,7 +93,7 @@ function findTweetsBySTREAM(player, team, author) {
         track: searchStringSTREAM
     });
 
-    console.log(TwitterSTREAM)
+    // console.log(TwitterSTREAM)
 
     TwitterSTREAM.on('data', function(tweet) {
 
@@ -113,7 +118,9 @@ function findTweetsBySTREAM(player, team, author) {
         if (found) { 
             console.log("inside stream tweet found")
             if(TweetsFromStream.indexOf(tweet) == -1){
-                saveTweetIntoDb(tweet,'stream');    
+                saveTweetIntoDb(tweet,'stream',function(tweet){
+
+                });    
             }
             
         }
@@ -190,33 +197,38 @@ tweets.getTweetsByRest = function(req,res){
      * q: searchString, count: Number of tweets returned.
      */
 
+
+    var tweetsArray = [];
+    var tweetReturnArray = [];
+
     TwitterREST.get('search/tweets', { q: searchStringREST , count: 300}, function(error, tweets, response){
+        tweets.statuses.forEach(function(tweet){
+            tweetsArray.push(tweet);
+        })
+        TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1].id}, function(error, tweets, response){
+            tweets.statuses.forEach(function(tweet){
+                tweetsArray.push(tweet);
+            })
+            TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1].id}, function(error, tweets, response){
+                tweets.statuses.forEach(function(tweet){
+                    tweetsArray.push(tweet);
+                })
+
+                // console.log(tweetsArray.length);
+
+                tweetsArray.forEach(function(tweet){
+                    saveTweetIntoDb(tweet,'rest',function(tweet){
+                        tweetReturnArray.push(tweet);
+                    })
+                })
+              
+                res.send(tweetsArray)    
+            
+            })
+        })
        
 
-       // console.log(tweets.statuses)
-
         
-
-       // tweets.statuses.forEach(function(tweet){
-       //      var options = {
-       //        host: 'https://publish.twitter.com',
-       //        path: "/oembed?https://twitter.com/"+tweet.user.screen_name+"/status/"+tweet.id
-       //      };
-       //      http.get(options,function(resp){
-       //          console.log(resp)
-       //      })
-       // })
-
-        if (tweets.statuses != null) {
-            tweets.statuses.forEach(function(tweet){
-                saveTweetIntoDb(tweet,'rest')
-            })
-            console.log(tweets.statuses.length);
-
-            res.send(tweets.statuses)    
-        }else{
-            res.send("")
-        }
         
     })
 }

@@ -26,7 +26,9 @@ var tweetSchema = new Schema({
         screen_name: {type: String, default: ""},
         url: { type: String, default: ""},
         profile_image_url: {type: String, default: ""},
-        description: {type: String, default: ""}  
+        description: {type: String, default: ""},
+        profile_background_image_url: {type: String, default: ""}
+  
     },
 
     text: {type: String, default: ""},
