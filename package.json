@@ -12,6 +12,7 @@
     "node": ">=6.x"
   },
   "dependencies": {
+    "bluebird": "^3.5.0",
     "body-parser": "~1.17.0",
     "compression": "~1.6.2",
     "cors": "^2.8.3",
@@ -25,6 +26,7 @@
     "mongoose": "~4.9.0",
     "morgan": "~1.8.0",
     "oauth": "^0.9.15",
+    "page-previewer": "^0.1.7",
     "request": "^2.81.0",
     "socket.io": "*",
     "twitter": "^1.7.0",

@@ -4,7 +4,7 @@ const TwitterREST = require('../../config/twitter').REST;
 const TwitterSTREAM = require('../../config/twitter').STREAM;
 const _ = require('lodash');
 var io = require('../../server').io;
-var https = require ('https');
+
 
 var socket;
 
@@ -156,11 +156,16 @@ function findTweetsBySTREAM(player, team, author) {
  */
 tweets.getTweetsByRest = function(req,res){
 
-    var player = req.query.player ? req.query.player : "";
-    var team = req.query.team ? req.query.team : "";
-    var author = req.query.author ? req.query.author : "football-news";
+    var player = req.query.player;
+    var team = req.query.team;
+    var author = req.query.author;
     var player_team_op = req.query.player_team_op;
     var team_author_op = req.query.team_author_op;
+
+
+    if(author == ""){
+        team_author_op = "OR";
+    }
 
     
     findTweetsBySTREAM(player, team, author);
@@ -214,7 +219,8 @@ tweets.getTweetsByRest = function(req,res){
                     tweetsArray.push(tweet);
                 })
 
-                // console.log(tweetsArray.length);
+                console.log(tweetsArray.length);
+                console.log(tweetsArray);
 
                 tweetsArray.forEach(function(tweet){
                     saveTweetIntoDb(tweet,'rest',function(tweet){
@@ -326,7 +332,7 @@ tweets.getFrequency = function(req,res){
             "count": { "$sum" : 1 }
         }}
         ,
-        {"$sort": { "_id.month": 1 }}
+        {"$sort": { "_id.month": 1,"_id.day": 1 }}
     ],function(err,response){
         console.log("getFrequency:")
         console.log(response);
