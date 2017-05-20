@@ -220,7 +220,7 @@ tweets.getTweetsByRest = function(req,res){
                 })
 
                 console.log(tweetsArray.length);
-                console.log(tweetsArray);
+                // console.log(tweetsArray);
 
                 tweetsArray.forEach(function(tweet){
                     saveTweetIntoDb(tweet,'rest',function(tweet){
