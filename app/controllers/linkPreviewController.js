@@ -48,10 +48,12 @@ module.exports.getOembed = function(req,res){
 
 // sparql query
 
-// PREFIX sp:<http://dbpedia.org/ontology/SoccerPlayer>
 // PREFIX p: <http://dbpedia.org/property/>
-// SELECT ?name, ?birthDate, ?height, ?labelposition,?clubName WHERE {
+// PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>
+// SELECT ?name, ?birthDate, ?height, ?labelposition,?clubName, ?country  WHERE {
 //   ?player a <http://dbpedia.org/ontology/SoccerPlayer> .
+//    ?player dbo:birthPlace ?countryOfBirth .
+//   ?countryOfBirth rdfs:label ?country .
 //   ?player dbp:name ?name . 
 //   ?player <http://dbpedia.org/ontology/birthDate> ?birthDate .
 //   ?player <http://dbpedia.org/ontology/Person/height> ?height  .
@@ -59,9 +61,11 @@ module.exports.getOembed = function(req,res){
 //   ?position rdfs:label ?labelposition . 
 //   ?player p:currentclub ?club .
 //   ?club rdfs:label ?clubName .
-//   FILTER(regex(?name, "WAYNE Rooney","i"))
+//   FILTER(regex(?name, "Rooney","i"))
 //   FILTER langMatches(lang(?labelposition),'en')
 //   FILTER langMatches(lang(?clubName ),'en')
+//   FILTER langMatches(lang(?country ),'en')
+// }
 
 
 module.exports.getSparqlQuery = function(req,res){

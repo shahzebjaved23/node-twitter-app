@@ -11,6 +11,9 @@
   "engines": {
     "node": ">=6.x"
   },
+  "scripts" :
+    {  "start" : "./node_modules/pm2/bin/pm2 start server.js" 
+  },
   "dependencies": {
     "bluebird": "^3.5.0",
     "body-parser": "~1.17.0",
