@@ -46,3 +46,7 @@ function connect () {
   return mongoose.connect("mongodb://root:password@ds123351.mlab.com:23351/nodetwitter", options).connection;
   // return mongoose.connect("mongodb://localhost/SoccerTransfer", options).connection;
 }
+
+  // "scripts" :
+  //   {  "start" : "./node_modules/pm2/bin/pm2 start server.js" 
+  // },
