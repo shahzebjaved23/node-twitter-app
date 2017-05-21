@@ -57,7 +57,10 @@ var saveTweetIntoDb = function(tweet,type,callback){
 
                         if(type == "stream"){
                             console.log("tweet emitted");
-                            socket.emit("tweet",{tweet: tweet});
+                            if(socket){
+                                socket.emit("tweet",{tweet: tweet});    
+                            }
+                            
                         } 
 
                         callback(tweet);    
@@ -192,7 +195,7 @@ tweets.getTweetsByRest = function(req,res){
     author = author.split(' ').join(' OR ');
 
     if(player_team_op == "AND" && team_author_op == "AND"){
-        searchStringREST = player+" "+team+" "+"from:"+author+" "+matchWords ;
+        searchStringREST = (player != "" ? player : null)+" "+(team != "" ? team : null)+" "+"from:"+author+" "+matchWords ;
     }else if(player_team_op == "OR" && team_author_op == "AND"){
         searchStringREST = player+" OR "+team+" "+"from:"+author+" "+matchWords ;
     }else if(player_team_op == "AND" && team_author_op == "OR"){

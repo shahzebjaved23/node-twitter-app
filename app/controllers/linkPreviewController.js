@@ -99,7 +99,7 @@ module.exports.getSparqlQuery = function(req,res){
 }
 
 
-module.exports.getAutoCompletePlayerSource = function(req,res){
+module.exports.getPlayerAutoComplete = function(req,res){
 	var name = req.query.name;
 
 	var query = "SELECT ?name WHERE {";
@@ -116,7 +116,7 @@ module.exports.getAutoCompletePlayerSource = function(req,res){
 	});
 }
 
-module.exports.getAutoCompleteTeamSource = function(req,res){
+module.exports.getTeamAutoComplete = function(req,res){
 	var name = req.query.name;
 
 	var query = "PREFIX p: <http://dbpedia.org/property/>";

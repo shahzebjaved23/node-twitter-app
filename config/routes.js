@@ -26,6 +26,10 @@ module.exports = function(app) {
     app.get("/getoEmbed",linkPreviewController.getOembed);
 
     app.get("/getSparqlQuery",linkPreviewController.getSparqlQuery);
+
+    app.get("playerAutoComplete",linkPreviewController.getPlayerAutoComplete);
+
+    app.get("/teamAutoComplete",linkPreviewController.getTeamAutoComplete);
    
     app.get('/get_twitter_bearer_token', function(req, res) {
         var consumer_key_base64 = config.twitter.consumer_key;
