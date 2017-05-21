@@ -27,7 +27,7 @@ module.exports = function(app) {
 
     app.get("/getSparqlQuery",linkPreviewController.getSparqlQuery);
 
-    app.get("playerAutoComplete",linkPreviewController.getPlayerAutoComplete);
+    app.get("/playerAutoComplete",linkPreviewController.getPlayerAutoComplete);
 
     app.get("/teamAutoComplete",linkPreviewController.getTeamAutoComplete);
    

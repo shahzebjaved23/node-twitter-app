@@ -102,15 +102,29 @@ module.exports.getSparqlQuery = function(req,res){
 module.exports.getPlayerAutoComplete = function(req,res){
 	var name = req.query.name;
 
-	var query = "SELECT ?name WHERE {";
+	console.log(name);
+
+// SELECT ?name, ?category WHERE {
+// ?player a <http://dbpedia.org/ontology/SoccerPlayer> .
+// ?player dbp:name ?name .
+// ?player dct:subject ?category . 
+// FILTER(regex(?name, "",'i'))
+// FILTER(regex(?category,"Category:Living_people","i"))
+// }
+
+	var query = "";
+	query += "SELECT ?name, ?category WHERE {";
   	query += "?player a <http://dbpedia.org/ontology/SoccerPlayer> .";
   	query += "?player dbp:name ?name .";
-  	query += "FILTER(regex(?name, "+name+",'i'))";  
-	query += "}";
+  	query += "?player dct:subject ?category . ";
+  	query += "FILTER(regex(?name,'"+name+"','i'))";
+  	query += "FILTER(regex(?category,'Category:Premier_League_players','i'))}" 
 
 	dps.client().query(query).asJson().then(function(r) { 
-		console.log(r);
-		res.send(r); 
+		returnArray = r.results.bindings.map(function(object){
+			return object.name.value;
+		});
+		res.send(returnArray); 
 	}).catch(function(e) { 
 		console.log(e)
 	});
@@ -124,13 +138,21 @@ module.exports.getTeamAutoComplete = function(req,res){
   	query += "?player a <http://dbpedia.org/ontology/SoccerPlayer> .";
   	query += "?player p:currentclub ?club .";
   	query += "?club rdfs:label ?clubName .";
-  	query += "FILTER(regex(?clubName, "+name+",'i'))";
+  	query += "?player dct:subject ?category ."
+  	query += "FILTER(regex(?clubName, '"+name+"','i'))";
   	query += "FILTER langMatches(lang(?clubName ),'en')";
-	query += "}";
+  	query += "FILTER(regex(?category,'Category:Premier_League_players','i'))}";
 
 	dps.client().query(query).asJson().then(function(r) { 
-		console.log(r);
-		res.send(r); 
+		parsedArray = r.results.bindings.map(function(object){
+			return object.clubName.value;
+		});
+
+		returnArray = parsedArray.filter(function(elem, index, self) {
+		    return index == self.indexOf(elem);
+		});
+		
+		res.send(returnArray);  
 	}).catch(function(e) { 
 		console.log(e)
 	});

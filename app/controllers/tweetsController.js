@@ -56,9 +56,9 @@ var saveTweetIntoDb = function(tweet,type,callback){
                         console.log("tweet saved");
 
                         if(type == "stream"){
-                            console.log("tweet emitted");
                             if(socket){
-                                socket.emit("tweet",{tweet: tweet});    
+                                socket.emit("tweet",{tweet: tweet});
+                                console.log("tweet emitted");    
                             }
                             
                         } 
