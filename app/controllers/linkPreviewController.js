@@ -99,3 +99,42 @@ module.exports.getSparqlQuery = function(req,res){
 }
 
 
+module.exports.getAutoCompletePlayerSource = function(req,res){
+	var name = req.query.name;
+
+	var query = "SELECT ?name WHERE {";
+  	query += "?player a <http://dbpedia.org/ontology/SoccerPlayer> .";
+  	query += "?player dbp:name ?name .";
+  	query += "FILTER(regex(?name, "+name+",'i'))";  
+	query += "}";
+
+	dps.client().query(query).asJson().then(function(r) { 
+		console.log(r);
+		res.send(r); 
+	}).catch(function(e) { 
+		console.log(e)
+	});
+}
+
+module.exports.getAutoCompleteTeamSource = function(req,res){
+	var name = req.query.name;
+
+	var query = "PREFIX p: <http://dbpedia.org/property/>";
+	query += "SELECT ?clubName  WHERE {";
+  	query += "?player a <http://dbpedia.org/ontology/SoccerPlayer> .";
+  	query += "?player p:currentclub ?club .";
+  	query += "?club rdfs:label ?clubName .";
+  	query += "FILTER(regex(?clubName, "+name+",'i'))";
+  	query += "FILTER langMatches(lang(?clubName ),'en')";
+	query += "}";
+
+	dps.client().query(query).asJson().then(function(r) { 
+		console.log(r);
+		res.send(r); 
+	}).catch(function(e) { 
+		console.log(e)
+	});
+
+}
+
+

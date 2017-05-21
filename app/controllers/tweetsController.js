@@ -93,6 +93,12 @@ function findTweetsBySTREAM(player, team, author) {
         track: searchStringSTREAM
     });
 
+    setTimeout(() => {
+        console.log("close the stream");
+        TwitterSTREAM.close();
+        return TweetsFromStream;
+    }, 100 * 1000); //time in mills
+
     // console.log(TwitterSTREAM)
 
     TwitterSTREAM.on('data', function(tweet) {
