@@ -172,9 +172,7 @@ tweets.getTweetsByRest = function(req,res){
     var team_author_op = req.query.team_author_op;
 
 
-    if(author == ""){
-        team_author_op = "OR";
-    }
+    
 
     
     findTweetsBySTREAM(player, team, author);
@@ -194,14 +192,48 @@ tweets.getTweetsByRest = function(req,res){
     team = team.split(' ').join(' OR ');
     author = author.split(' ').join(' OR ');
 
+    // generate the query string in terms of the supplied operators
+    // leave out the varaibles if they are empty strings
     if(player_team_op == "AND" && team_author_op == "AND"){
-        searchStringREST = (player != "" ? player : null)+" "+(team != "" ? team : null)+" "+"from:"+author+" "+matchWords ;
+        if(player == "" && team != ""){
+            searchStringREST = team+" "+matchWords ;
+        }else if(player != "" && team == ""){
+            searchStringREST = player+" "+matchWords ;
+        }else if(player != "" && team != ""){
+            searchStringREST = player+" "+team+" "+matchWords ;
+        }     
     }else if(player_team_op == "OR" && team_author_op == "AND"){
-        searchStringREST = player+" OR "+team+" "+"from:"+author+" "+matchWords ;
+        if(player == "" && team != ""){
+            searchStringREST = team+" OR "+matchWords ;
+        }else if(player != "" && team == ""){
+            searchStringREST = player+" OR "+matchWords ;
+        }else if(player != "" && team != ""){
+            searchStringREST = player+" OR "+team+" "+matchWords ;
+        }
     }else if(player_team_op == "AND" && team_author_op == "OR"){
-        searchStringREST = player+" "+team+" OR "+"from:"+author+" "+matchWords ;
+        if(player == "" && team != ""){
+            searchStringREST = team+" OR "+matchWords ;
+        }else if(player != "" && team == ""){
+            searchStringREST = player+" OR "+matchWords ;
+        }else if(player != "" && team != ""){
+            searchStringREST = player+" "+team+" OR "+matchWords ;
+        }
     }else if(player_team_op == "OR" && team_author_op == "OR"){
-        searchStringREST = player+" OR "+team+" OR "+"from:"+author+" "+matchWords ;
+        if(player == "" && team != ""){
+            searchStringREST = team+" OR "+matchWords ;
+        }else if(player != "" && team == ""){
+            searchStringREST = player+" OR "+matchWords ;
+        }else if(player != "" && team != ""){
+            searchStringREST = player+" OR "+team+" OR "+matchWords ;
+        }
+    }
+
+    if(author != ""){
+        if(team_author_op == "OR"){
+            searchStringREST += "OR from:"+author;
+        }else if(team_author_op = "AND"){
+            searchStringREST += "AND from:"+author;
+        }
     }
 
     console.log(searchStringREST);

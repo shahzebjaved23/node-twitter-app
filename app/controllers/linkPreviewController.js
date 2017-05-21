@@ -113,12 +113,12 @@ module.exports.getPlayerAutoComplete = function(req,res){
 // }
 
 	var query = "";
-	query += "SELECT ?name, ?category WHERE {";
+	query += "SELECT ?name WHERE {";
   	query += "?player a <http://dbpedia.org/ontology/SoccerPlayer> .";
   	query += "?player dbp:name ?name .";
   	query += "?player dct:subject ?category . ";
   	query += "FILTER(regex(?name,'"+name+"','i'))";
-  	query += "FILTER(regex(?category,'Category:Premier_League_players','i'))}" 
+  	query += "FILTER(regex(?category,'Category:La_Liga_players','i'))}" 
 
 	dps.client().query(query).asJson().then(function(r) { 
 		returnArray = r.results.bindings.map(function(object){
@@ -141,7 +141,7 @@ module.exports.getTeamAutoComplete = function(req,res){
   	query += "?player dct:subject ?category ."
   	query += "FILTER(regex(?clubName, '"+name+"','i'))";
   	query += "FILTER langMatches(lang(?clubName ),'en')";
-  	query += "FILTER(regex(?category,'Category:Premier_League_players','i'))}";
+  	query += "FILTER(regex(?category,'Category:La_Liga_players','i'))}";
 
 	dps.client().query(query).asJson().then(function(r) { 
 		parsedArray = r.results.bindings.map(function(object){
@@ -151,7 +151,7 @@ module.exports.getTeamAutoComplete = function(req,res){
 		returnArray = parsedArray.filter(function(elem, index, self) {
 		    return index == self.indexOf(elem);
 		});
-		
+
 		res.send(returnArray);  
 	}).catch(function(e) { 
 		console.log(e)
