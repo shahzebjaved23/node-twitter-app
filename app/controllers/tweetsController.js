@@ -96,13 +96,16 @@ function findTweetsBySTREAM(player, team, author) {
         track: searchStringSTREAM
     });
 
+
+    /*
+    * close the stream. other wise the server gets overloaded and crashes
+    */
     setTimeout(() => {
         console.log("close the stream");
         TwitterSTREAM.close();
         return TweetsFromStream;
     }, 100 * 1000); //time in mills
 
-    // console.log(TwitterSTREAM)
 
     TwitterSTREAM.on('data', function(tweet) {
 

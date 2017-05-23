@@ -2,6 +2,7 @@ var preview = require("page-previewer");
 var http = require("http");
 var Twit = require('twit');
 var dps = require('dbpedia-sparql-client').default;
+var _ = require('lodash');
 
 var T = new Twit({
   consumer_key:         process.env.CONSUMER_KEY,
@@ -74,7 +75,7 @@ module.exports.getSparqlQuery = function(req,res){
 
 	var query = "";
 	query += "PREFIX p: <http://dbpedia.org/property/>";
-	query += "SELECT ?name, ?birthDate, ?height, ?labelposition,?clubName, ?country WHERE {";
+	query += "SELECT ?name, ?birthDate, ?height, ?labelposition,?clubName, ?country,?image WHERE {";
   	query += "?player a <http://dbpedia.org/ontology/SoccerPlayer> .";
   	query += "?player dbo:birthPlace ?countryOfBirth .";
   	query += "?countryOfBirth rdfs:label ?country .";
@@ -83,16 +84,21 @@ module.exports.getSparqlQuery = function(req,res){
   	query += "?player <http://dbpedia.org/ontology/Person/height> ?height  .";
   	query += "?player <http://dbpedia.org/ontology/position> ?position .";
   	query += "?position rdfs:label ?labelposition . ";
+  	query += "?player dct:subject ?category ."
   	query += "?player p:currentclub ?club .";
-  	query += "?club rdfs:label ?clubName ."; 
+  	query += "?club rdfs:label ?clubName .";
+  	query += "?player <http://dbpedia.org/ontology/thumbnail> ?image ." 
   	query += "FILTER(regex(?name, '"+player+"','i'))";
+  	query += "FILTER(regex(?category,'Category:Manchester_United_F.C._players|Category:Chelsea_F.C._players','i'))";
   	query += "FILTER langMatches(lang(?country ),'en')";
   	query += "FILTER langMatches(lang(?labelposition),'en')";
   	query += "FILTER langMatches(lang(?clubName ),'en')}";
 
 	dps.client().query(query).asJson().then(function(r) { 
-		console.log(r);
-		res.send(r); 
+		var returnArray = _.uniqBy(r.results.bindings,function(object){
+			return object.name.value;
+		});
+		res.send(returnArray);
 	}).catch(function(e) { 
 		console.log(e)
 	});
@@ -121,7 +127,7 @@ module.exports.getPlayerAutoComplete = function(req,res){
   	query += "FILTER(regex(?category,'Category:La_Liga_players','i'))}" 
 
 	dps.client().query(query).asJson().then(function(r) { 
-		returnArray = r.results.bindings.map(function(object){
+		var returnArray = r.results.bindings.map(function(object){
 			return object.name.value;
 		});
 		res.send(returnArray); 
@@ -144,11 +150,11 @@ module.exports.getTeamAutoComplete = function(req,res){
   	query += "FILTER(regex(?category,'Category:La_Liga_players','i'))}";
 
 	dps.client().query(query).asJson().then(function(r) { 
-		parsedArray = r.results.bindings.map(function(object){
+		var parsedArray = r.results.bindings.map(function(object){
 			return object.clubName.value;
 		});
 
-		returnArray = parsedArray.filter(function(elem, index, self) {
+		var returnArray = parsedArray.filter(function(elem, index, self) {
 		    return index == self.indexOf(elem);
 		});
 
