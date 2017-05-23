@@ -340,42 +340,106 @@ tweets.getFrequency = function(req,res){
     console.log(player)
     console.log(team)
     console.log(author)
+    console.log(player_team_op)
+    console.log(team_author_op)
+
+    var options ;
+
+    if(player_team_op == "OR"){
+        if(player != "" && team != ""){
+            options = {
+                $match: {
+                    $or:[
+                        {
+                            text:{
+                                $regex: new RegExp(playerplayer.split(" ").join("|")),
+                                $options: 'i'
+                            }
+                        },
+                        {
+                            text:{
+                                $regex: new RegExp(team.replace("FC","").split(" ").join("|")), 
+                                $options: 'i'
+                            }
+                        }            
+                    ]
+                }
+            };
+        }else if(player != "" && team == ""){
+            options = {
+                $match: {
+                    text:{
+                        $regex: new RegExp(playerplayer.split(" ").join("|")),
+                        $options: 'i'
+                    }  
+                }
+            };
+        }else if( player == "" && team != ""){
+            options = {
+                $match: {
+                    text:{
+                        $regex: new RegExp(team.replace("FC|F.C.","").split(" ").join("|")),
+                        $options: 'i'
+                    }  
+                }
+            };
+        }
+    }else if (player_team_op == "AND"){
+        if(player != "" && team != ""){
+            options = {
+                $match: {
+                    $and:[
+                        {
+                            text:{
+                                $regex: new RegExp(player.split(" ").join("|")),
+                                $options: 'i'
+                            }
+                        },
+                        {
+                            text:{
+                                $regex: new RegExp(team.replace("FC|F.C.","").split(" ").join("|")), 
+                                $options: 'i'
+                            }
+                        }            
+                    ]
+                }
+            };
+        }else if(player != "" && team == ""){
+            options = {
+                $match: {
+                    text:{
+                        $regex: new RegExp(player.split(" ").join("|")),
+                        $options: 'i'
+                    }  
+                }
+            };
+        }else if( player == "" && team != ""){
+            options = {
+                $match: {
+                    text:{
+                        $regex: new RegExp(team.replace("FC|F.C.","").split(" ").join("|")),
+                        $options: 'i'
+                    }  
+                }
+            };
+        }
+    }   
+
+    console.log(options);
+
 
     Tweet.aggregate([
-        {
-            $match:{
-                $or:[
-                {text: 
-                    {
-                        $regex: new RegExp(player),
-                        $options: 'i'
-                    }
-                },
-                {text: 
-                    {
-                        $regex: new RegExp(team), 
-                        $options: 'i'
-                    }
-                },
-                {"user.name": 
-                    {
-                        $regex: new RegExp(author),
-                        $options: 'i'
-                    }       
-                }            
-            ]
-            }
-        },
+        options,
         { 
             "$group": {
-            "_id": {
-                 "year": { "$year": "$created_at" },
-                 "month":{ "$month": "$created_at"},
-                 "day": { "$dayOfMonth": "$created_at" } 
-            },
-            "count": { "$sum" : 1 }
-        }}
-        ,
+                "_id": {
+                    "year": { "$year": "$created_at" },
+                    "month":{ "$month": "$created_at"},
+                    "day": { "$dayOfMonth": "$created_at" } 
+                },
+                "count": { "$sum" : 1 }
+            }
+        },
         {"$sort": { "_id.month": 1,"_id.day": 1 }}
     ],function(err,response){
         console.log("getFrequency:")
