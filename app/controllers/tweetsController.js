@@ -207,27 +207,27 @@ tweets.getTweetsByRest = function(req,res){
         }     
     }else if(player_team_op == "OR" && team_author_op == "AND"){
         if(player == "" && team != ""){
-            searchStringREST = team+" OR "+matchWords ;
+            searchStringREST = team+" "+matchWords ;
         }else if(player != "" && team == ""){
-            searchStringREST = player+" OR "+matchWords ;
+            searchStringREST = player+" "+matchWords ;
         }else if(player != "" && team != ""){
             searchStringREST = player+" OR "+team+" "+matchWords ;
         }
     }else if(player_team_op == "AND" && team_author_op == "OR"){
         if(player == "" && team != ""){
-            searchStringREST = team+" OR "+matchWords ;
+            searchStringREST = team+" "+matchWords ;
         }else if(player != "" && team == ""){
-            searchStringREST = player+" OR "+matchWords ;
+            searchStringREST = player+" "+matchWords ;
         }else if(player != "" && team != ""){
-            searchStringREST = player+" "+team+" OR "+matchWords ;
+            searchStringREST = player+" "+team+" "+matchWords ;
         }
     }else if(player_team_op == "OR" && team_author_op == "OR"){
         if(player == "" && team != ""){
             searchStringREST = team+" OR "+matchWords ;
         }else if(player != "" && team == ""){
-            searchStringREST = player+" OR "+matchWords ;
+            searchStringREST = player+" "+matchWords ;
         }else if(player != "" && team != ""){
-            searchStringREST = player+" OR "+team+" OR "+matchWords ;
+            searchStringREST = player+" OR "+team+" "+matchWords ;
         }
     }
 
