@@ -180,7 +180,7 @@ tweets.getTweetsByRest = function(req,res){
     
     findTweetsBySTREAM(player, team, author);
 
-    var matchWords = 'contract OR transfer OR offer OR bargain OR signs OR deal OR buy OR purchase OR trade OR accept OR move OR moving OR rumours';
+    var matchWords = 'contract OR transfer OR offer OR signs OR buy OR moving';
 
     // the query string to twitter, ex. ' "Rooney" "#manutd" contract OR transfer..'
 
