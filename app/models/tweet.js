@@ -21,7 +21,7 @@ var tweetSchema = new Schema({
 		author of the tweet, screen_name of author account.
     */
     user: { 
-        id: { type: String, default: ""},
+        id_str: { type: String, default: ""},
         name: {type: String, default: ""},
         screen_name: {type: String, default: ""},
         url: { type: String, default: ""},

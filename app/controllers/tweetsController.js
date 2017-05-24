@@ -28,7 +28,7 @@ var saveTweetIntoDb = function(tweet,type,callback){
                 var newTweet = new Tweet(
                     {
                         tweet_type: type,
-                        id: tweet.id,
+                        id_str: tweet.id_str,
                         text: tweet.text,
                         user:{
                             id: tweet.user.id,
