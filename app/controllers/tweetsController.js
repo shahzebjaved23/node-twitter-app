@@ -263,39 +263,39 @@ tweets.getTweetsByRest = function(req,res){
     var tweetReturnArray = [];
 
     TwitterREST.get('search/tweets', { q: searchStringREST , count: 300}, function(error, tweets, response){
-        tweets.statuses.forEach(function(tweet){
-            tweetsArray.push(tweet);
-        })
-        TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1].id}, function(error, tweets, response){
+        
+        if(tweets.statuses){
             tweets.statuses.forEach(function(tweet){
                 tweetsArray.push(tweet);
             })
             TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1].id}, function(error, tweets, response){
-                tweets.statuses.forEach(function(tweet){
-                    tweetsArray.push(tweet);
-                })
-
-                console.log(tweetsArray.length);
-                // console.log(tweetsArray);
-
-                tweetsArray.forEach(function(tweet){
-                    saveTweetIntoDb(tweet,'rest',function(tweet){
-                        tweetReturnArray.push(tweet);
+                if(tweets.statuses){
+                    tweets.statuses.forEach(function(tweet){
+                        tweetsArray.push(tweet);
                     })
-                })
+                    TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1].id}, function(error, tweets, response){
+                        if(tweets.statuses){
+                            tweets.statuses.forEach(function(tweet){
+                                tweetsArray.push(tweet);
+                            })
+                            console.log(tweetsArray.length);
+                            // console.log(tweetsArray);
 
-                _.remove(tweetsArray, function(t) {
-                    return (!!t.retweeted_status)
-                });
-
-                res.send(tweetsArray)    
-            
+                            tweetsArray.forEach(function(tweet){
+                                saveTweetIntoDb(tweet,'rest',function(tweet){
+                                    tweetReturnArray.push(tweet);
+                                })
+                            })
+                            // remove retweets to remove duplicates
+                            _.remove(tweetsArray, function(t) {
+                                return (!!t.retweeted_status)
+                            });
+                            res.send(tweetsArray)    
+                        }
+                    })
+                }          
             })
-        })
-       
-
-        
-        
+        }
     })
 }
 
