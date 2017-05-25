@@ -284,7 +284,7 @@ tweets.getTweetsByRest = function(req,res){
                     })
                 })
                 var uniqTweets = _.uniqBy(tweetsArray,function(tweet){
-                    return tweet.id;
+                    return tweet.id_str;
                 })
                 res.send(uniqTweets)    
             
