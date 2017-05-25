@@ -350,6 +350,10 @@ tweets.getFrequency = function(req,res){
     var player_team_op = req.query.player_team_op;
     var team_author_op = req.query.team_author_op;
 
+    player = player.replace(" ","|").replace(","," ")
+    team = team.replace(" ","|");
+    author = author.replace(" ","|");
+
 
     console.log(player)
     console.log(team)
