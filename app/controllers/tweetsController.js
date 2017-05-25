@@ -164,7 +164,8 @@ function findTweetsBySTREAM(player, team, author) {
  * @param {String} team name or hashtag, or handle.
  * @param {String} author name or hashtag, or handle.
  * @param {String} max_id is the id of latest tweet returned
- *
+ * @param {String} player_team_op is the operation between player and team
+ * @param {String} team_author_op is the operation of author and team
  */
 tweets.getTweetsByRest = function(req,res){
 
@@ -174,16 +175,19 @@ tweets.getTweetsByRest = function(req,res){
     var player_team_op = req.query.player_team_op;
     var team_author_op = req.query.team_author_op;
 
+    /*
+    * Open the tweets Stream
+    */
 
-    
-
-    
     findTweetsBySTREAM(player, team, author);
 
+
+    /*
+    * the query words
+    */
     var matchWords = 'contract OR transfer OR offer OR signs OR buy OR moving';
 
-    // the query string to twitter, ex. ' "Rooney" "#manutd" contract OR transfer..'
-
+    
     /* 
     *  searching by player, team, or author twitter handles.
     *  appending 'from:' filter to search string to get tweets from given account handles.
@@ -191,9 +195,16 @@ tweets.getTweetsByRest = function(req,res){
 
     var searchStringREST = "";
 
+    /*
+    * Parse the inputs params, replace ',' with AND so that is searches for whole query 
+    */
     player = player.split(' ').join(' OR ');
     team = team.split(' ').join(' OR ');
     author = author.split(' ').join(' OR ');
+
+    player.replace(","," AND ");
+    team.replace("FC","").replace("F.C","").replace("F.C.","").replace(","," AND ");
+    author.replace(","," AND ");
 
     // generate the query string in terms of the supplied operators
     // leave out the varaibles if they are empty strings

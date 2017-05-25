@@ -8,7 +8,7 @@ var tweetSchema = new Schema({
 		each is mapped to it's model reference.
 		* Makes the tweet more organized by player and team name 
 	*/
-    id: {type: String, unique: true},
+    id_str: {type: String, unique: true},
 	player: { type: Schema.ObjectId, ref: 'Player' },
     team: { type: Schema.ObjectId, ref: 'Team'},
 
@@ -21,7 +21,7 @@ var tweetSchema = new Schema({
 		author of the tweet, screen_name of author account.
     */
     user: { 
-        id_str: { type: String, default: ""},
+        id: { type: String, default: ""},
         name: {type: String, default: ""},
         screen_name: {type: String, default: ""},
         url: { type: String, default: ""},

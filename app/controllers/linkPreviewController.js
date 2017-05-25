@@ -47,26 +47,6 @@ module.exports.getOembed = function(req,res){
 
 }
 
-// sparql query
-
-// PREFIX p: <http://dbpedia.org/property/>
-// PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>
-// SELECT ?name, ?birthDate, ?height, ?labelposition,?clubName, ?country  WHERE {
-//   ?player a <http://dbpedia.org/ontology/SoccerPlayer> .
-//    ?player dbo:birthPlace ?countryOfBirth .
-//   ?countryOfBirth rdfs:label ?country .
-//   ?player dbp:name ?name . 
-//   ?player <http://dbpedia.org/ontology/birthDate> ?birthDate .
-//   ?player <http://dbpedia.org/ontology/Person/height> ?height  .
-//   ?player <http://dbpedia.org/ontology/position> ?position .
-//   ?position rdfs:label ?labelposition . 
-//   ?player p:currentclub ?club .
-//   ?club rdfs:label ?clubName .
-//   FILTER(regex(?name, "Rooney","i"))
-//   FILTER langMatches(lang(?labelposition),'en')
-//   FILTER langMatches(lang(?clubName ),'en')
-//   FILTER langMatches(lang(?country ),'en')
-// }
 
 
 module.exports.getSparqlQuery = function(req,res){
@@ -107,17 +87,6 @@ module.exports.getSparqlQuery = function(req,res){
 
 module.exports.getPlayerAutoComplete = function(req,res){
 	var name = req.query.name;
-
-	console.log(name);
-
-// SELECT ?name, ?category WHERE {
-// ?player a <http://dbpedia.org/ontology/SoccerPlayer> .
-// ?player dbp:name ?name .
-// ?player dct:subject ?category . 
-// FILTER(regex(?name, "",'i'))
-// FILTER(regex(?category,"Category:Living_people","i"))
-// }
-
 	var query = "";
 	query += "SELECT ?name WHERE {";
   	query += "?player a <http://dbpedia.org/ontology/SoccerPlayer> .";
@@ -153,11 +122,9 @@ module.exports.getTeamAutoComplete = function(req,res){
 		var parsedArray = r.results.bindings.map(function(object){
 			return object.clubName.value;
 		});
-
 		var returnArray = parsedArray.filter(function(elem, index, self) {
 		    return index == self.indexOf(elem);
 		});
-
 		res.send(returnArray);  
 	}).catch(function(e) { 
 		console.log(e)
