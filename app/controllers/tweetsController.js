@@ -283,8 +283,10 @@ tweets.getTweetsByRest = function(req,res){
                         tweetReturnArray.push(tweet);
                     })
                 })
-              
-                res.send(tweetsArray)    
+                var uniqTweets = _.uniqBy(tweetsArray,function(tweet){
+                    return tweet.id;
+                })
+                res.send(uniqTweets)    
             
             })
         })
