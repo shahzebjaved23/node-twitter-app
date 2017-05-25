@@ -284,11 +284,11 @@ tweets.getTweetsByRest = function(req,res){
                     })
                 })
 
-                var uniqTweets = _.uniqBy(tweetsArray,function(tweet){
-                    return tweet.id;
-                })
+                _.remove(tweetsArray, function(t) {
+                    return (!!t.retweeted_status)
+                });
 
-                res.send(uniqTweets)    
+                res.send(tweetsArray)    
             
             })
         })
