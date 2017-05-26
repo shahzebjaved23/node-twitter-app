@@ -199,13 +199,12 @@ tweets.getTweetsByRest = function(req,res){
     /*
     * Parse the inputs params, replace ',' with AND so that is searches for whole query 
     */
-    player = player.split(' ').join(' OR ');
-    team = team.split(' ').join(' OR ');
-    author = author.split(' ').join(' OR ');
 
-    player.replace(","," AND ");
-    team.replace("FC","").replace("F.C","").replace("F.C.","").replace(","," AND ");
-    author.replace(","," AND ");
+    // TODO: Fix the terms, each term will be considered a single item
+    
+    player.replace(","," ");
+    team.replace("FC","").replace("F.C","").replace("F.C.","").replace(","," ");
+    author.replace(","," ");
 
     // generate the query string in terms of the supplied operators
     // leave out the varaibles if they are empty strings
