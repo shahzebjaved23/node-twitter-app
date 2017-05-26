@@ -264,18 +264,18 @@ tweets.getTweetsByRest = function(req,res){
 
     var tweetsArray = [];
     
-    TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, language:"en"}, function(error, tweets, response){
+    TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, lang:"en"}, function(error, tweets, response){
         
         if(tweets.statuses){
             tweets.statuses.forEach(function(tweet){
                 tweetsArray.push(tweet);
             })
-            TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1].id, language:"en"}, function(error, tweets, response){
+            TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1].id, lang:"en"}, function(error, tweets, response){
                 if(tweets.statuses){
                     tweets.statuses.forEach(function(tweet){
                         tweetsArray.push(tweet);
                     })
-                    TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1].id, language:"en"}, function(error, tweets, response){
+                    TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1].id, lang:"en"}, function(error, tweets, response){
                         if(tweets.statuses){
                             tweets.statuses.forEach(function(tweet){
                                 tweetsArray.push(tweet);
