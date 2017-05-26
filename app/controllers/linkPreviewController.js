@@ -51,8 +51,10 @@ module.exports.getOembed = function(req,res){
 
 module.exports.getSparqlQuery = function(req,res){
 
-	var player = req.query.player;
-	var playerregex = new RegExp(player);
+	var player = req.query.player.replace(","," ");
+	// var playerregex = new RegExp(player);
+
+	// console.log(playerregex);
 
 	var query = "";
 	query += "PREFIX p: <http://dbpedia.org/property/>";
@@ -69,7 +71,7 @@ module.exports.getSparqlQuery = function(req,res){
   	query += "?player p:currentclub ?club .";
   	query += "?club rdfs:label ?clubName .";
   	query += "OPTIONAL{ ?player <http://dbpedia.org/ontology/thumbnail> ?image . }" 
-  	query += "FILTER(regex(?name, '"+playerregex+"','i'))";
+  	query += "FILTER(regex(?name, '"+player+"','i'))";
   	query += "FILTER(regex(?category,'Category:Manchester_United_F.C._players|Category:Chelsea_F.C._players','i'))";
   	query += "FILTER langMatches(lang(?country ),'en')";
   	query += "FILTER langMatches(lang(?labelposition),'en')";
