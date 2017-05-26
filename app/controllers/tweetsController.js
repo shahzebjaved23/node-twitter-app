@@ -85,14 +85,15 @@ var saveTweetIntoDb = function(tweet,type,callback){
  */
 var TweetsFromStream = [];
 
-function findTweetsBySTREAM(query) {
+function findTweetsBySTREAM(player,team,author) {
 
     /*
      * Twitter STREAM API, 
      * path: 'statuses/filter', track: to track tweets that match player or team name.
      */
     var stream = TwitterSTREAM.stream('statuses/filter', {
-        track: query
+        track: player + " " + team,
+        follow: author
     });
 
 
@@ -188,14 +189,17 @@ tweets.getTweetsByRest = function(req,res){
     if(author != ""){
         author = "'"+author.replace(" "," OR ").replace(","," ");    
     }
+
+    /*
+    * Open the tweets Stream
+    */
+
+    findTweetsBySTREAM(player,team,author); 
     
-    
-   
     /*
     * the query words
     */
     var matchWords = 'contract OR transfer OR offer OR signs OR buy OR moving';
-
     
     /* 
     *  searching by player, team, or author twitter handles.
@@ -249,13 +253,7 @@ tweets.getTweetsByRest = function(req,res){
         }
     }
 
-    console.log(searchStringREST);
-
-     /*
-    * Open the tweets Stream
-    */
-
-    // findTweetsBySTREAM(searchStringREST);
+    console.log(searchStringREST);   
 
     /*
      * Twitter REST API, 
