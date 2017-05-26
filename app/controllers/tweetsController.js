@@ -177,9 +177,19 @@ tweets.getTweetsByRest = function(req,res){
     /*
     * Parse the inputs params, replace ',' with AND so that is searches for whole query 
     */
-    player = "'"+player.replace(" "," OR ").replace(","," ")+"'";
-    team = "'"+team.replace("FC","").replace("F.C","").replace("F.C.","").replace(" "," OR ").replace(","," ")+"'";
-    author = "'"+author.replace(" "," OR ").replace(","," ");
+    if(player != ""){
+        player = "'"+player.replace(" "," OR ").replace(","," ")+"'";    
+    }
+    
+    if(team != ""){
+        team = "'"+team.replace("FC","").replace("F.C","").replace("F.C.","").replace(" "," OR ").replace(","," ")+"'";    
+    }
+
+    if(author != ""){
+        author = "'"+author.replace(" "," OR ").replace(","," ");    
+    }
+    
+    
    
     /*
     * the query words
