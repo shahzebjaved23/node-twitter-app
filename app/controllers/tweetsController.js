@@ -177,9 +177,9 @@ tweets.getTweetsByRest = function(req,res){
     /*
     * Parse the inputs params, replace ',' with AND so that is searches for whole query 
     */
-    player.replace(" "," OR ").replace(","," ");
-    team.replace("FC","").replace("F.C","").replace("F.C.","").replace(" "," OR ").replace(","," ");
-    author.replace(" "," OR ").replace(","," ");
+    player = player.replace(" "," OR ").replace(","," ");
+    team = team.replace("FC","").replace("F.C","").replace("F.C.","").replace(" "," OR ").replace(","," ");
+    author = author.replace(" "," OR ").replace(","," ");
    
     /*
     * the query words
