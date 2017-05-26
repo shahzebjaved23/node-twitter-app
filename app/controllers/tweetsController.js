@@ -255,7 +255,7 @@ tweets.getTweetsByRest = function(req,res){
     * Open the tweets Stream
     */
 
-    findTweetsBySTREAM(searchStringREST);
+    // findTweetsBySTREAM(searchStringREST);
 
     /*
      * Twitter REST API, 
