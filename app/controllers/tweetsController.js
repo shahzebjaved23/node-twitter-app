@@ -293,6 +293,10 @@ tweets.getTweetsByRest = function(req,res){
 var searchDb = function(player,team,author,player_team_op,team_author_op,callback){
     console.log(RegExp(author));
 
+    player = player.replace(" "," OR ").replace(","," ");
+    team = team.replace("FC","").replace("F.C","").replace("F.C.","").replace(" "," OR ").replace(","," ");
+    author = author.replace(" "," OR ").replace(","," ");
+
       Tweet.find({
         $and:[
             {text: 
@@ -341,9 +345,9 @@ tweets.getFrequency = function(req,res){
     var player_team_op = req.query.player_team_op;
     var team_author_op = req.query.team_author_op;
 
-    player = player.replace(" ","|").replace(","," ")
-    team = team.replace(" ","|");
-    author = author.replace(" ","|");
+    player = player.replace(" "," OR ").replace(","," ");
+    team = team.replace("FC","").replace("F.C","").replace("F.C.","").replace(" "," OR ").replace(","," ");
+    author = author.replace(" "," OR ").replace(","," ");
 
 
     console.log(player)
