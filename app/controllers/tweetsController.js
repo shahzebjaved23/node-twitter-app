@@ -193,7 +193,7 @@ tweets.getTweetsByRest = function(req,res){
     * Open the tweets Stream
     */
 
-    // findTweetsBySTREAM(player,team,author); 
+    findTweetsBySTREAM(player,team,author); 
     
     /*
     * the query words
