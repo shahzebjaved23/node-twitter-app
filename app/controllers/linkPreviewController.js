@@ -54,7 +54,7 @@ module.exports.getSparqlQuery = function(req,res){
 	var player = req.query.player.replace(","," ");
 	// var playerregex = new RegExp(player);
 
-	// console.log(playerregex);
+	
 
 	var query = "";
 	query += "PREFIX p: <http://dbpedia.org/property/>";
