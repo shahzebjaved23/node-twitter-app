@@ -336,7 +336,7 @@ tweets.getTweetsFromDb = function(req,res){
     var tweets = searchDb(player,team,author,null,null,function(tweets){
         var ruturnArray = _.uniqBy(tweets, function(t) {
             return t.text        });
-        res.send(returnArray);
+        res.send(ruturnArray);
     });
 }
 
@@ -367,13 +367,13 @@ tweets.getFrequency = function(req,res){
                     $or:[
                         {
                             text:{
-                                $regex: new RegExp(playerplayer.split(" ").join("|")),
+                                $regex: new RegExp(playerplayer),
                                 $options: 'i'
                             }
                         },
                         {
                             text:{
-                                $regex: new RegExp(team.replace("FC","").split(" ").join("|")), 
+                                $regex: new RegExp(team), 
                                 $options: 'i'
                             }
                         }            
@@ -384,7 +384,7 @@ tweets.getFrequency = function(req,res){
             options = {
                 $match: {
                     text:{
-                        $regex: new RegExp(playerplayer.split(" ").join("|")),
+                        $regex: new RegExp(playerplayer),
                         $options: 'i'
                     }  
                 }
@@ -393,7 +393,7 @@ tweets.getFrequency = function(req,res){
             options = {
                 $match: {
                     text:{
-                        $regex: new RegExp(team.replace("FC|F.C.","").split(" ").join("|")),
+                        $regex: new RegExp(team),
                         $options: 'i'
                     }  
                 }
@@ -406,13 +406,13 @@ tweets.getFrequency = function(req,res){
                     $and:[
                         {
                             text:{
-                                $regex: new RegExp(player.split(" ").join("|")),
+                                $regex: new RegExp(player),
                                 $options: 'i'
                             }
                         },
                         {
                             text:{
-                                $regex: new RegExp(team.replace("FC|F.C.","").split(" ").join("|")), 
+                                $regex: new RegExp(team), 
                                 $options: 'i'
                             }
                         }            
@@ -423,7 +423,7 @@ tweets.getFrequency = function(req,res){
             options = {
                 $match: {
                     text:{
-                        $regex: new RegExp(player.split(" ").join("|")),
+                        $regex: new RegExp(player),
                         $options: 'i'
                     }  
                 }
@@ -432,7 +432,7 @@ tweets.getFrequency = function(req,res){
             options = {
                 $match: {
                     text:{
-                        $regex: new RegExp(team.replace("FC|F.C.","").split(" ").join("|")),
+                        $regex: new RegExp(team),
                         $options: 'i'
                     }  
                 }
