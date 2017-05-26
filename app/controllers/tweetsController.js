@@ -177,9 +177,9 @@ tweets.getTweetsByRest = function(req,res){
     /*
     * Parse the inputs params, replace ',' with AND so that is searches for whole query 
     */
-    player = player.replace(" "," OR ").replace(","," ");
-    team = team.replace("FC","").replace("F.C","").replace("F.C.","").replace(" "," OR ").replace(","," ");
-    author = author.replace(" "," OR ").replace(","," ");
+    player = "'"+player.replace(" "," OR ").replace(","," ")+"'";
+    team = "'"+team.replace("FC","").replace("F.C","").replace("F.C.","").replace(" "," OR ").replace(","," ")+"'";
+    author = "'"+author.replace(" "," OR ").replace(","," ");
    
     /*
     * the query words
@@ -203,7 +203,7 @@ tweets.getTweetsByRest = function(req,res){
         }else if(player != "" && team == ""){
             searchStringREST = player+" "+matchWords ;
         }else if(player != "" && team != ""){
-            searchStringREST = player+" "+team+" "+matchWords ;
+            searchStringREST = player+" "+team+" OR "+matchWords ;
         }     
     }else if(player_team_op == "OR" && team_author_op == "AND"){
         if(player == "" && team != ""){
@@ -211,7 +211,7 @@ tweets.getTweetsByRest = function(req,res){
         }else if(player != "" && team == ""){
             searchStringREST = player+" "+matchWords ;
         }else if(player != "" && team != ""){
-            searchStringREST = player+" OR "+team+" "+matchWords ;
+            searchStringREST = player+" OR "+team+" OR "+matchWords ;
         }
     }else if(player_team_op == "AND" && team_author_op == "OR"){
         if(player == "" && team != ""){
@@ -219,7 +219,7 @@ tweets.getTweetsByRest = function(req,res){
         }else if(player != "" && team == ""){
             searchStringREST = player+" "+matchWords ;
         }else if(player != "" && team != ""){
-            searchStringREST = player+" "+team+" "+matchWords ;
+            searchStringREST = player+" "+team+" OR "+matchWords ;
         }
     }else if(player_team_op == "OR" && team_author_op == "OR"){
         if(player == "" && team != ""){
@@ -227,7 +227,7 @@ tweets.getTweetsByRest = function(req,res){
         }else if(player != "" && team == ""){
             searchStringREST = player+" "+matchWords ;
         }else if(player != "" && team != ""){
-            searchStringREST = player+" OR "+team+" "+matchWords ;
+            searchStringREST = player+" OR "+team+" OR "+matchWords ;
         }
     }
 
