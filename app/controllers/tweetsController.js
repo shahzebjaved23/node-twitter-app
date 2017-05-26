@@ -334,6 +334,9 @@ tweets.getTweetsFromDb = function(req,res){
     var author = req.query.author;
     
     var tweets = searchDb(player,team,author,null,null,function(tweets){
+        _.remove(tweets, function(t) {
+            return (!!t.retweeted_status)
+        });
         res.send(tweets);
     });
 }
