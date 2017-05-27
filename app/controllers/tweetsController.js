@@ -85,9 +85,7 @@ var saveTweetIntoDb = function(tweet,type,callback){
  */
 function findTweetsBySTREAM(player,team,author) {
 
-    // if(TwitterSTREAM){
-    //     TwitterSTREAM.close();
-    // }
+    var stream;
 
     /*
      * Twitter STREAM API, 
@@ -95,7 +93,7 @@ function findTweetsBySTREAM(player,team,author) {
      */
      console.log(player + " " + team);
      var querystring = player + " " + team; 
-    var stream = TwitterSTREAM.stream('statuses/filter', {
+    stream = TwitterSTREAM.stream('statuses/filter', {
         track: querystring.trim()
     });
 
