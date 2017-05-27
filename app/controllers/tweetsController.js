@@ -89,6 +89,7 @@ function findTweetsBySTREAM(player,team,author,shouldClose) {
     if(shouldClose == true){
         console.log("should close stream");
         TwitterSTREAM.close();
+        return;
     }
 
     /*
