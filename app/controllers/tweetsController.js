@@ -87,6 +87,10 @@ function findTweetsBySTREAM(player,team,author) {
 
     var stream;
 
+    if(stream){
+        stream.close();
+    }
+
     /*
      * Twitter STREAM API, 
      * path: 'statuses/filter', track: to track tweets that match player or team name.
