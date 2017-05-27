@@ -148,10 +148,12 @@ function findTweetsBySTREAM(player,team,author,shouldClose) {
 
     TwitterSTREAM.on('connection error network', function(error) {
         console.log('connection error network', error);
+        TwitterSTREAM.close();
     });
 
     TwitterSTREAM.on('connection error http', function(httpStatusCode) {
         console.log('connection error http', httpStatusCode);
+        TwitterSTREAM.close();         
     });
 
     TwitterSTREAM.on('connection error unknown', function(error) {
