@@ -191,7 +191,7 @@ tweets.getTweetsByRest = function(req,res){
     * Open the tweets Stream
     */
 
-    if(req.query.count > 1 && req.query.stream == "true"){
+    if(parseInt(req.query.count) > 1 && req.query.stream == "true"){
         findTweetsBySTREAM(player,team,author,true);    
     }else{
         findTweetsBySTREAM(player,team,author,false);
