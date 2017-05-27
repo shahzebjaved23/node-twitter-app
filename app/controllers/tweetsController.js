@@ -107,6 +107,7 @@ function findTweetsBySTREAM(player,team,author,shouldClose) {
     setTimeout(() => {
         console.log("close the stream");
         TwitterSTREAM.close();
+        return ;
     }, 50 * 1000); //time in mills
 
 
