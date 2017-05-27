@@ -91,6 +91,7 @@ function findTweetsBySTREAM(player,team,author) {
      * Twitter STREAM API, 
      * path: 'statuses/filter', track: to track tweets that match player or team name.
      */
+     console.log(player + " " + team);
     var stream = TwitterSTREAM.stream('statuses/filter', {
         track: player + " " + team
     });
@@ -103,7 +104,7 @@ function findTweetsBySTREAM(player,team,author) {
         console.log("close the stream");
         TwitterSTREAM.close();
         return TweetsFromStream;
-    }, 100 * 1000); //time in mills
+    }, 20 * 1000); //time in mills
 
 
     TwitterSTREAM.on('data', function(tweet) {
