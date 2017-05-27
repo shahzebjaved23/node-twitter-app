@@ -83,8 +83,6 @@ var saveTweetIntoDb = function(tweet,type,callback){
  * @param {String} author name.
  *
  */
-var TweetsFromStream = [];
-
 function findTweetsBySTREAM(player,team,author) {
 
     // if(TwitterSTREAM){
@@ -98,17 +96,16 @@ function findTweetsBySTREAM(player,team,author) {
      console.log(player + " " + team);
      var querystring = player + " " + team; 
     var stream = TwitterSTREAM.stream('statuses/filter', {
-        track: querystring.trim().replace("'","")
+        track: querystring.trim()
     });
 
     /*
     * close the stream. other wise the server gets overloaded and crashes
     */
-    // setTimeout(() => {
-    //     console.log("close the stream");
-    //     TwitterSTREAM.close();
-    //     return TweetsFromStream;
-    // }, 100 * 1000); //time in mills
+    setTimeout(() => {
+        console.log("close the stream");
+        TwitterSTREAM.close();
+    }, 20 * 1000); //time in mills
 
 
     TwitterSTREAM.on('data', function(tweet) {
