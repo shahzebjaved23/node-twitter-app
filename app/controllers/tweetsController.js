@@ -87,6 +87,10 @@ var TweetsFromStream = [];
 
 function findTweetsBySTREAM(player,team,author) {
 
+    if(TwitterSTREAM){
+        TwitterSTREAM.close();
+    }
+
     /*
      * Twitter STREAM API, 
      * path: 'statuses/filter', track: to track tweets that match player or team name.
@@ -97,19 +101,14 @@ function findTweetsBySTREAM(player,team,author) {
         track: querystring.trim().replace("'","")
     });
 
-    if(TwitterSTREAM){
-        TwitterSTREAM.close();
-    }
-
-
     /*
     * close the stream. other wise the server gets overloaded and crashes
     */
-    setTimeout(() => {
-        console.log("close the stream");
-        TwitterSTREAM.close();
-        return TweetsFromStream;
-    }, 20 * 1000); //time in mills
+    // setTimeout(() => {
+    //     console.log("close the stream");
+    //     TwitterSTREAM.close();
+    //     return TweetsFromStream;
+    // }, 100 * 1000); //time in mills
 
 
     TwitterSTREAM.on('data', function(tweet) {
@@ -134,12 +133,7 @@ function findTweetsBySTREAM(player,team,author) {
 
         if (found) { 
             console.log("inside stream tweet found")
-            if(TweetsFromStream.indexOf(tweet) == -1){
-                saveTweetIntoDb(tweet,'stream',function(tweet){
-
-                });    
-            }
-            
+            saveTweetIntoDb(tweet,'stream',function(tweet){});    
         }
     });
 
