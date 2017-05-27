@@ -87,9 +87,9 @@ var TweetsFromStream = [];
 
 function findTweetsBySTREAM(player,team,author) {
 
-    if(TwitterSTREAM){
-        TwitterSTREAM.close();
-    }
+    // if(TwitterSTREAM){
+    //     TwitterSTREAM.close();
+    // }
 
     /*
      * Twitter STREAM API, 
