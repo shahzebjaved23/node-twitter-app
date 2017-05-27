@@ -1,16 +1,13 @@
 var preview = require("page-previewer");
 var http = require("http");
-var Twit = require('twit');
 var dps = require('dbpedia-sparql-client').default;
 var _ = require('lodash');
 
-var T = new Twit({
-  consumer_key:         process.env.CONSUMER_KEY,
-  consumer_secret:      process.env.CONSUMER_SECRET,
-  access_token:         "197496793-yVnc4tIs1ORhgjJq6ZvpAABADzLVArmD4jIAUULy",
-  access_token_secret:  "mn4RpqZfP1NLm6mmZb154uZ4nMNIJ1UHPwPsfopcVwYU7"
-})
 
+
+/*
+* gets the link preview using page viewer
+*/
 module.exports.getLinkPreview = function(req,res){
 	var url = req.query.url;
 	if(url != null){
@@ -23,39 +20,17 @@ module.exports.getLinkPreview = function(req,res){
     }
 }
 
-
-module.exports.getOembed = function(req,res){
-	var id = req.query.id;
-	var url = req.query.url;
-
-	console.log(id);
-
-	// T.get('statuses/oembed', { id: id.toString() },  function (err, data, response) {
- //        console.log(data);
- //        res.send(data)
- //    })
-
- 	var options = {
- 		host: "publish.twitter.com",
- 		path: "/oembed?url="+url
- 	}
-
- 	console.log(url);
-	http.get(options, function(err,response){
-		console.log(response);
-	})
-
-}
-
-
+/*
+* query the dbpedia to get player information
+*/
 
 module.exports.getSparqlQuery = function(req,res){
 
+
+	// parse the player request param
 	var player = req.query.player.replace(","," ");
-	// var playerregex = new RegExp(player);
-
 	
-
+	// the sparql query
 	var query = "";
 	query += "PREFIX p: <http://dbpedia.org/property/>";
 	query += "SELECT ?name, ?birthDate, ?height, ?labelposition,?clubName, ?country,?image WHERE {";
@@ -88,6 +63,7 @@ module.exports.getSparqlQuery = function(req,res){
 }
 
 
+// gets the player information to be used in autocomplete
 module.exports.getPlayerAutoComplete = function(req,res){
 	var name = req.query.name;
 	var query = "";
@@ -108,6 +84,7 @@ module.exports.getPlayerAutoComplete = function(req,res){
 	});
 }
 
+// gets the team information to be used in autocomplete
 module.exports.getTeamAutoComplete = function(req,res){
 	var name = req.query.name;
 

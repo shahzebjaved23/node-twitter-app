@@ -23,8 +23,6 @@ module.exports = function(app) {
 
     app.get("/linkpreview",linkPreviewController.getLinkPreview);
 
-    app.get("/getoEmbed",linkPreviewController.getOembed);
-
     app.get("/getSparqlQuery",linkPreviewController.getSparqlQuery);
 
     app.get("/playerAutoComplete",linkPreviewController.getPlayerAutoComplete);

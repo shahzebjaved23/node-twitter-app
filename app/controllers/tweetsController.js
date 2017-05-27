@@ -6,16 +6,24 @@ const _ = require('lodash');
 var io = require('../../server').io;
 
 
+// the export variable
+var tweets = {}
+
+// the socket variable
 var socket;
 
+// listen for connection event and assign the socket
 io.on('connection', function(s){
   console.log('a user connected');
   socket = s;
 });
 
-var tweets = {};
-
-
+/*
+* saves a tweet to the db
+* @param {Tweet} tweet
+* @param {string} type (rest of stream)
+* @param {function} callback
+*/ 
 var saveTweetIntoDb = function(tweet,type,callback){
     // console.log("inside the save tweets function");
     
@@ -55,24 +63,19 @@ var saveTweetIntoDb = function(tweet,type,callback){
                         console.log(err);
                     }else{
                         console.log("tweet saved");
-
+                        // id tweet saved and socket present, emit the tweet
                         if(type == "stream"){
                             if(socket){
                                 socket.emit("tweet",{tweet: tweet});
                                 console.log("tweet emitted");    
-                            }
-                            
+                            }  
                         } 
-
                         callback(tweet);    
                     }
-
-                    
                 })           
             }
         }
     })
-   
 }
 
 /**
@@ -85,7 +88,7 @@ var saveTweetIntoDb = function(tweet,type,callback){
  */
 function findTweetsBySTREAM(player,team,author,shouldClose) {
 
-    
+    // close the stream if stream already present
     if(shouldClose == true){
         console.log("should close stream");
         TwitterSTREAM.close();
@@ -109,7 +112,7 @@ function findTweetsBySTREAM(player,team,author,shouldClose) {
         console.log("close the stream");
         TwitterSTREAM.close();
         return ;
-    }, 50 * 1000); //time in mills
+    }, 100 * 1000); //time in mills
 
 
     TwitterSTREAM.on('data', function(tweet) {
@@ -132,6 +135,7 @@ function findTweetsBySTREAM(player,team,author,shouldClose) {
             }
         });
 
+        // if tweet conforms, then save to database
         if (found) { 
             console.log("inside stream tweet found")
             saveTweetIntoDb(tweet,'stream',function(tweet){});    
@@ -265,6 +269,7 @@ tweets.getTweetsByRest = function(req,res){
     /*
      * Twitter REST API, 
      * q: searchString, count: Number of tweets returned.
+     * make multiple requests to get 300
      */
 
     var tweetsArray = [];
@@ -275,12 +280,12 @@ tweets.getTweetsByRest = function(req,res){
             tweets.statuses.forEach(function(tweet){
                 tweetsArray.push(tweet);
             })
-            TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1].id, lang:"en"}, function(error, tweets, response){
+            TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1] ? tweetsArray[tweetsArray.length - 1].id : null, lang:"en"}, function(error, tweets, response){
                 if(tweets.statuses){
                     tweets.statuses.forEach(function(tweet){
                         tweetsArray.push(tweet);
                     })
-                    TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1].id, lang:"en"}, function(error, tweets, response){
+                    TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1] ? tweetsArray[tweetsArray.length - 1].id : null, lang:"en"}, function(error, tweets, response){
                         if(tweets.statuses){
                             tweets.statuses.forEach(function(tweet){
                                 tweetsArray.push(tweet);
@@ -305,6 +310,10 @@ tweets.getTweetsByRest = function(req,res){
     })
 }
 
+
+/*
+* search the database for the player name and team name and author name
+*/
 var searchDb = function(player,team,author,player_team_op,team_author_op,callback){
     console.log(RegExp(author));
 
@@ -343,6 +352,9 @@ var searchDb = function(player,team,author,player_team_op,team_author_op,callbac
 
 }
 
+/*
+* search the database for tweets and return the result
+*/
 tweets.getTweetsFromDb = function(req,res){
     var player = req.query.player;
     var team = req.query.team;
@@ -355,6 +367,10 @@ tweets.getTweetsFromDb = function(req,res){
     });
 }
 
+
+/*
+* use the mondo db aggregate pipeline to get the frequency 
+*/ 
 tweets.getFrequency = function(req,res){
     var player = req.query.player ? req.query.player : "";
     var team = req.query.team ? req.query.team : "";
@@ -362,18 +378,14 @@ tweets.getFrequency = function(req,res){
     var player_team_op = req.query.player_team_op;
     var team_author_op = req.query.team_author_op;
 
+    // parse and replace the request params
     player = player.replace(" "," OR ").replace(","," ");
     team = team.replace("FC","").replace("F.C","").replace("F.C.","").replace(" "," OR ").replace(","," ");
     author = author.replace(" "," OR ").replace(","," ");
 
-
-    console.log(player)
-    console.log(team)
-    console.log(author)
-    console.log(player_team_op)
-    console.log(team_author_op)
-
     var options ;
+
+    // initialize the options based on the req params
 
     if(player_team_op == "OR"){
         if(player != "" && team != ""){
