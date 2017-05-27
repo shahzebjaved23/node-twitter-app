@@ -86,7 +86,7 @@ var saveTweetIntoDb = function(tweet,type,callback){
 function findTweetsBySTREAM(player,team,author,shouldClose) {
 
     
-    if(shouldClose){
+    if(shouldClose == true){
         console.log("should close stream");
         TwitterSTREAM.close();
     }
@@ -194,8 +194,10 @@ tweets.getTweetsByRest = function(req,res){
     console.log(parseInt(req.query.count));
     console.log(req.query.stream);
     if(parseInt(req.query.count) > 1 && req.query.stream == "yes"){
+        console.log("stream with true");
         findTweetsBySTREAM(player,team,author,true);    
     }else{
+        console.log("stream with false");
         findTweetsBySTREAM(player,team,author,false);
     }
 
