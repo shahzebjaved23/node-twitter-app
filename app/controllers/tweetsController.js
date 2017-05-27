@@ -97,6 +97,10 @@ function findTweetsBySTREAM(player,team,author) {
         track: querystring.trim().replace("'","")
     });
 
+    if(TwitterSTREAM){
+        TwitterSTREAM.close();
+    }
+
 
     /*
     * close the stream. other wise the server gets overloaded and crashes
