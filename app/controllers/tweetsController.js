@@ -87,6 +87,7 @@ function findTweetsBySTREAM(player,team,author,shouldClose) {
 
     
     if(shouldClose){
+        console.log("should close stream");
         TwitterSTREAM.close();
     }
 
