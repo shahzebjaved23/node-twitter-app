@@ -83,11 +83,10 @@ var saveTweetIntoDb = function(tweet,type,callback){
  * @param {String} author name.
  *
  */
-function findTweetsBySTREAM(player,team,author) {
+function findTweetsBySTREAM(player,team,author,shouldClose) {
 
-    var stream;
-
-    if(stream){
+    
+    if(shouldClose){
         stream.close();
     }
 
@@ -96,8 +95,8 @@ function findTweetsBySTREAM(player,team,author) {
      * path: 'statuses/filter', track: to track tweets that match player or team name.
      */
      console.log(player + " " + team);
-     var querystring = player + " " + team; 
-    stream = TwitterSTREAM.stream('statuses/filter', {
+    var querystring = player + " " + team; 
+    var stream = TwitterSTREAM.stream('statuses/filter', {
         track: querystring.trim()
     });
 
@@ -107,7 +106,7 @@ function findTweetsBySTREAM(player,team,author) {
     setTimeout(() => {
         console.log("close the stream");
         TwitterSTREAM.close();
-    }, 20 * 1000); //time in mills
+    }, 50 * 1000); //time in mills
 
 
     TwitterSTREAM.on('data', function(tweet) {
@@ -192,8 +191,12 @@ tweets.getTweetsByRest = function(req,res){
     * Open the tweets Stream
     */
 
-    findTweetsBySTREAM(player,team,author); 
-    
+    if(req.query.count > 1 && req.query.stream == "true"){
+        findTweetsBySTREAM(player,team,author,true);    
+    }else{
+        findTweetsBySTREAM(player,team,author,false);
+    }
+
     /*
     * the query words
     */
