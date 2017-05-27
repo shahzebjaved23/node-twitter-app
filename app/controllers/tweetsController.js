@@ -94,7 +94,7 @@ function findTweetsBySTREAM(player,team,author) {
      console.log(player + " " + team);
      var querystring = player + " " + team; 
     var stream = TwitterSTREAM.stream('statuses/filter', {
-        track: querystring.trim().replace("'","");
+        track: querystring.trim().replace("'","")
     });
 
 
