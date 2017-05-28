@@ -352,6 +352,19 @@ var searchDb = function(player,team,author,player_team_op,team_author_op,callbac
     team = team.replace(/FC/g,"").replace(/F.C/g,"").replace(/,F.C./g,"").replace(/ /g," OR ").trim();
     author = author.replace(/ /g,"|").trim();
 
+    console.log("in the database")
+
+     console.log("player");
+    console.log(player);
+
+    console.log("author");
+    console.log(author);
+
+    console.log("team");
+    console.log(team);
+
+
+
       Tweet.find({
         $and:[
             {text: 
@@ -392,9 +405,9 @@ tweets.getTweetsFromDb = function(req,res){
     var author = req.query.author;
     
     var tweets = searchDb(player,team,author,null,null,function(tweets){
-        var ruturnArray = _.uniqBy(tweets, function(t) {
-            return t.text;      
-        });
+        // var ruturnArray = _.uniqBy(tweets, function(t) {
+        //     return t.text;      
+        // });
         console.log(ruturnArray)
         res.send(ruturnArray);
     });
