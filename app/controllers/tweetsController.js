@@ -405,11 +405,11 @@ tweets.getTweetsFromDb = function(req,res){
     var author = req.query.author;
     
     var tweets = searchDb(player,team,author,null,null,function(tweets){
-        // var ruturnArray = _.uniqBy(tweets, function(t) {
-        //     return t.text;      
-        // });
-        // console.log(ruturnArray)
-        res.send(tweets);
+        var ruturnArray = _.uniqBy(tweets, function(t) {
+            return t.text;      
+        });
+        console.log(ruturnArray)
+        res.send(ruturnArray);
     });
 }
 
