@@ -348,7 +348,7 @@ tweets.getTweetsByRest = function(req,res){
 var searchDb = function(player,team,author,player_team_op,team_author_op,callback){
     console.log(RegExp(author));
 
-    player = player.replace(/\s/g,"|").trim();
+    player = player.replace(/ /g,"|").trim();
     team = team.replace(/FC/g,"").replace(/F.C/g,"").replace(/,F.C./g,"").replace(/ /g," OR ").trim();
     author = author.replace(/ /g,"|").trim();
 
