@@ -181,19 +181,42 @@ tweets.getTweetsByRest = function(req,res){
     var player_team_op = req.query.player_team_op;
     var team_author_op = req.query.team_author_op;
 
+    console.log("player");
+    console.log(player);
+
+    console.log("team");
+    console.log(team);
+
+    console.log("author");
+    console.log(author);
+
+    console.log("player_team_op");
+    console.log(player_team_op);
+
+    console.log("team_author_op");
+    console.log(team_author_op);
+
     /*
     * Parse the inputs params, replace ',' with AND so that is searches for whole query 
     */
-    if(player != ""){
-        player = "'"+player.replace(" "," OR ").replace(","," ")+"'";    
+    if(player){
+        var playerArr = player.split(" ");
+        playerArr = playerArr.map(function(p){
+            return "'"+p.replace(/,/g," ")+"'"
+        })
+        player = playerArr.join(" OR ");    
     }
     
-    if(team != ""){
-        team = "'"+team.replace("FC","").replace("F.C","").replace("F.C.","").replace(" "," OR ").replace(","," ")+"'";    
+    if(team){
+        var teamArr = team.split(" ");
+        teamArr = teamArr.map(function(t){
+            return "'"+t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ")+"'";
+        })
+        team = teamArr.join(" OR ");    
     }
 
-    if(author != ""){
-        author = "'"+author.replace(" "," OR ").replace(","," ");    
+    if(author){
+        author = "'"+author.trim().replace(/ /g," OR ").replace(/,/g," ");    
     }
 
     /*
@@ -278,36 +301,42 @@ tweets.getTweetsByRest = function(req,res){
     
     TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, lang:"en"}, function(error, tweets, response){
         
-        if(tweets.statuses){
-            tweets.statuses.forEach(function(tweet){
-                tweetsArray.push(tweet);
-            })
-            TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1] ? tweetsArray[tweetsArray.length - 1].id : null, lang:"en"}, function(error, tweets, response){
-                if(tweets.statuses){
-                    tweets.statuses.forEach(function(tweet){
-                        tweetsArray.push(tweet);
-                    })
-                    TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1] ? tweetsArray[tweetsArray.length - 1].id : null, lang:"en"}, function(error, tweets, response){
+        if(tweets){
+            if(tweets.statuses){
+                tweets.statuses.forEach(function(tweet){
+                    tweetsArray.push(tweet);
+                })
+                TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1] ? tweetsArray[tweetsArray.length - 1].id : null, lang:"en"}, function(error, tweets, response){
+                    if(tweets){
                         if(tweets.statuses){
-                            tweets.statuses.forEach(function(tweet){
-                                tweetsArray.push(tweet);
-                            })
-                            console.log(tweetsArray.length);
-                            
-                            // save tweets to db
-                            tweetsArray.forEach(function(tweet){
-                                saveTweetIntoDb(tweet,'rest',function(tweet){
+                            if(tweets){
+                                tweets.statuses.forEach(function(tweet){
+                                    tweetsArray.push(tweet);
                                 })
-                            })
-                            // remove retweets to remove duplicates
-                            _.remove(tweetsArray, function(t) {
-                                return (!!t.retweeted_status)
-                            });
-                            res.send(tweetsArray)    
+                                TwitterREST.get('search/tweets', { q: searchStringREST , count: 300, max_id: tweetsArray[tweetsArray.length - 1] ? tweetsArray[tweetsArray.length - 1].id : null, lang:"en"}, function(error, tweets, response){
+                                    if(tweets.statuses){
+                                        tweets.statuses.forEach(function(tweet){
+                                            tweetsArray.push(tweet);
+                                        })
+                                        
+                                        // save tweets to db
+                                        tweetsArray.forEach(function(tweet){
+                                            saveTweetIntoDb(tweet,'rest',function(tweet){
+                                            })
+                                        })
+                                        // remove retweets to remove duplicates
+                                        _.remove(tweetsArray, function(t) {
+                                            return (!!t.retweeted_status)
+                                        });
+                                        console.log(tweetsArray.length);
+                                        res.send(tweetsArray)    
+                                    }
+                                })    
+                            }       
                         }
-                    })
-                }          
-            })
+                    }  
+                })
+            }
         }
     })
 }
@@ -319,9 +348,9 @@ tweets.getTweetsByRest = function(req,res){
 var searchDb = function(player,team,author,player_team_op,team_author_op,callback){
     console.log(RegExp(author));
 
-    player = player.replace(" "," OR ").replace(","," ");
-    team = team.replace("FC","").replace("F.C","").replace("F.C.","").replace(" "," OR ").replace(","," ");
-    author = author.replace(" "," OR ").replace(","," ");
+    player = player.replace(/ /g,"|").trim();
+    team = team.replace(/FC/g,"").replace(/F.C/g,"").replace(/,F.C./g,"").replace(/ /g," OR ").trim();
+    author = author.replace(/ /g,"|").trim();
 
       Tweet.find({
         $and:[
@@ -364,7 +393,8 @@ tweets.getTweetsFromDb = function(req,res){
     
     var tweets = searchDb(player,team,author,null,null,function(tweets){
         var ruturnArray = _.uniqBy(tweets, function(t) {
-            return t.text        });
+            return t.text;      
+        });
         res.send(ruturnArray);
     });
 }
@@ -381,9 +411,18 @@ tweets.getFrequency = function(req,res){
     var team_author_op = req.query.team_author_op;
 
     // parse and replace the request params
-    player = player.replace(" "," OR ").replace(","," ");
-    team = team.replace("FC","").replace("F.C","").replace("F.C.","").replace(" "," OR ").replace(","," ");
-    author = author.replace(" "," OR ").replace(","," ");
+    player = player.replace(/,/g,"|").replace(/ /g,"|");
+    team = team.replace(/,FC/g,"").replace(/,F.C/g,"").replace(/,F.C./g,"").trim().replace(/ /g,"|");
+    author = author.replace(/ /g,"|");
+
+    console.log("player");
+    console.log(player);
+
+    console.log("author");
+    console.log(author);
+
+    console.log("team");
+    console.log(team);
 
     var options ;
 
@@ -396,7 +435,7 @@ tweets.getFrequency = function(req,res){
                     $or:[
                         {
                             text:{
-                                $regex: new RegExp(playerplayer),
+                                $regex: new RegExp(player),
                                 $options: 'i'
                             }
                         },
@@ -413,7 +452,7 @@ tweets.getFrequency = function(req,res){
             options = {
                 $match: {
                     text:{
-                        $regex: new RegExp(playerplayer),
+                        $regex: new RegExp(player),
                         $options: 'i'
                     }  
                 }

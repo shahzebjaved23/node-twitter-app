@@ -9,7 +9,7 @@ const mongoose = require('mongoose');
 const config = require('./config');
 
 const models = join(__dirname, 'app/models');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 const app = express();
 var http = require('http').Server(app);
 var io = require('socket.io').listen(http);
