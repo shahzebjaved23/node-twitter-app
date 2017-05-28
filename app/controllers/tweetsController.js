@@ -395,6 +395,7 @@ tweets.getTweetsFromDb = function(req,res){
         var ruturnArray = _.uniqBy(tweets, function(t) {
             return t.text;      
         });
+        console.log(ruturnArray)
         res.send(ruturnArray);
     });
 }
