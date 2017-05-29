@@ -594,7 +594,8 @@ tweets.getFrequency = function(req,res){
 
     options = {
         $match: {
-            
+            $or:[         
+            ]
         }
     }
 
@@ -617,12 +618,12 @@ tweets.getFrequency = function(req,res){
     }
 
     if(author != ""){
-        options["$match"] = {
+        options.$match.$or.push({
                     "user.screen_name":{
                         $regex: new RegExp(author),
                         $options: 'i'
                     }
-                };    
+                });    
     }
     
 
@@ -633,27 +634,32 @@ tweets.getFrequency = function(req,res){
 
 
 
+    // Tweet.aggregate([
+    //     options,
+    //     { 
+    //         "$group": {
+    //             "_id": {
+    //                 "year": { "$year": "$created_at" },
+    //                 "month":{ "$month": "$created_at"},
+    //                 "day": { "$dayOfMonth": "$created_at" } 
+    //             },
+    //             "count": { "$sum" : 1 }
+    //         }
+    //     },
+    //     {"$sort": { "_id.month": 1,"_id.day": 1 }}
+    // ],function(err,response){
+    //     console.log("getFrequency:")
+    //     console.log(response);
+    //     res.send(response);
+    // })
+
+
     Tweet.aggregate([
-        options,
-        { 
-            "$group": {
-                "_id": {
-                    "year": { "$year": "$created_at" },
-                    "month":{ "$month": "$created_at"},
-                    "day": { "$dayOfMonth": "$created_at" } 
-                },
-                "count": { "$sum" : 1 }
-            }
-        },
-        {"$sort": { "_id.month": 1,"_id.day": 1 }}
-    ],function(err,response){
+        options],function(err,response){
         console.log("getFrequency:")
         console.log(response);
         res.send(response);
     })
-
-
-   
 }
 
 module.exports = tweets;
