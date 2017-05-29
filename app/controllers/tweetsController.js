@@ -594,25 +594,7 @@ tweets.getFrequency = function(req,res){
 
     options = {
         $match: {
-            $or:[
-                {
-                    text:{
-                        $regex: new RegExp(player),
-                        $options: 'i'
-                    }
-                },
-                {
-                    text:{
-                        $regex: new RegExp(team), 
-                        $options: 'i'
-                    }
-                },
-                {
-                    "user.screen_name":{
-                        $regex: new RegExp(author),
-                        $options: 'i'
-                    }
-                }            
+            $or:[         
             ]
         }
     }
@@ -627,7 +609,7 @@ tweets.getFrequency = function(req,res){
     }
 
     if(team != ""){
-        options.$match.$and.push({
+        options.$match.$or.push({
                     text:{
                         $regex: new RegExp(team),
                         $options: 'i'
@@ -636,7 +618,7 @@ tweets.getFrequency = function(req,res){
     }
 
     if(author != ""){
-        options.$match.$and.push({
+        options.$match.$or.push({
                     "user.screen_name":{
                         $regex: new RegExp(author),
                         $options: 'i'
