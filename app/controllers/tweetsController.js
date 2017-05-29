@@ -203,9 +203,9 @@ tweets.getTweetsByRest = function(req,res){
         var playerArr = player.split(" ");
         playerArr = playerArr.map(function(p){
             if(p.replace(/,/g," ").indexOf("@") != -1 || p.replace(/,/g," ").indexOf("#") != -1){
-                return "'"+p.replace(/,/g," ")+"'"
-            }else{
                 return ""+p.replace(/,/g," ")+""
+            }else{
+                return "'"+p.replace(/,/g," ")+"'"
             }
         })
         player = playerArr.join(" OR ");    
@@ -215,9 +215,9 @@ tweets.getTweetsByRest = function(req,res){
         var teamArr = team.split(" ");
         teamArr = teamArr.map(function(t){
             if(t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ").indexOf("@") != -1 || t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ").indexOf("#") != -1){
-                return "'"+t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ")+"'";
-            }else{
                 return ""+t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ")+"";
+            }else{
+                return "'"+t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ")+"'";
             }  
         })
         team = teamArr.join(" OR ");    
@@ -227,9 +227,9 @@ tweets.getTweetsByRest = function(req,res){
         var authorArr = author.trim().split(" ");
         authorArr = authorArr.map(function(a){
             if(author.trim().replace(/ /g," OR ").replace(/,/g," ").indexOf("@") != -1 || author.trim().replace(/ /g," OR ").replace(/,/g," ").indexOf("#") != -1){
-                return "'"+author.trim().replace(/ /g," OR ").replace(/,/g," ")+"'";
+                return ""+author.trim().replace(/ /g," OR ").replace(/,/g," ")+"";
             }else{
-                return ""+author.trim().replace(/ /g," OR ").replace(/,/g," ");
+                return "'"+author.trim().replace(/ /g," OR ").replace(/,/g," ")+"'";
             }
         })
         author = authorArr.join(" OR ");   
