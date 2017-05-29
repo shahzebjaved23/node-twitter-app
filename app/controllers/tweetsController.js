@@ -345,6 +345,8 @@ tweets.getTweetsByRest = function(req,res){
                                             return (!!t.retweeted_status)
                                         });
                                         console.log(tweetsArray.length);
+                                        var retarr = _.countBy(tweetsArray, _.identity);
+                                        console.log(retarr);
                                         res.send(tweetsArray)    
                                     }
                                 })    
@@ -458,138 +460,138 @@ tweets.getFrequency = function(req,res){
 
     // initialize the options based on the req params
 
-    if(player_team_op == "OR"){
-        if(player != "" && team != ""){
-            options = {
-                $match: {
-                    $and:[
-                        {
-                            text:{
-                                $regex: new RegExp(player),
-                                $options: 'i'
-                            }
-                        },
-                        {
-                            text:{
-                                $regex: new RegExp(team), 
-                                $options: 'i'
-                            }
-                        },
-                        {
-                            "user.screen_name":{
-                                $regex: new RegExp(author),
-                                $options: 'i'
-                            }
-                        }            
-                    ]
-                }
-            };
-        }else if(player != "" && team == ""){
-            options = {
-                $match: {
-                    $and:[
-                        {
-                            text:{
-                                $regex: new RegExp(player),
-                                $options: 'i'
-                            }
-                        },
-                        {
-                            "user.screen_name":{
-                                $regex: new RegExp(author),
-                                $options: 'i'
-                            }
-                        }
-                    ]
+    // if(player_team_op == "OR"){
+    //     if(player != "" && team != "" && author != ""){
+    //         options = {
+    //             $match: {
+    //                 $and:[
+    //                     {
+    //                         text:{
+    //                             $regex: new RegExp(player),
+    //                             $options: 'i'
+    //                         }
+    //                     },
+    //                     {
+    //                         text:{
+    //                             $regex: new RegExp(team), 
+    //                             $options: 'i'
+    //                         }
+    //                     },
+    //                     {
+    //                         "user.screen_name":{
+    //                             $regex: new RegExp(author),
+    //                             $options: 'i'
+    //                         }
+    //                     }            
+    //                 ]
+    //             }
+    //         };
+    //     }else if(player != "" && team == "" && author != ""){
+    //         options = {
+    //             $match: {
+    //                 $and:[
+    //                     {
+    //                         text:{
+    //                             $regex: new RegExp(player),
+    //                             $options: 'i'
+    //                         }
+    //                     },
+    //                     {
+    //                         "user.screen_name":{
+    //                             $regex: new RegExp(author),
+    //                             $options: 'i'
+    //                         }
+    //                     }
+    //                 ]
                       
-                }
-            };
-        }else if( player == "" && team != ""){
-            options = {
-                $match: {
-                    $and:[
-                        {
-                            text:{
-                                $regex: new RegExp(team),
-                                $options: 'i'
-                            }
-                        },
-                        {
-                            "user.screen_name":{
-                                $regex: new RegExp(author),
-                                $options: 'i'
-                            }
-                        }
-                    ]  
-                }
-            };
-        }
-    }else if (player_team_op == "AND"){
-        if(player != "" && team != ""){
-            options = {
-                $match: {
-                    $and:[
-                        {
-                            text:{
-                                $regex: new RegExp(player),
-                                $options: 'i'
-                            }
-                        },
-                        {
-                            text:{
-                                $regex: new RegExp(team), 
-                                $options: 'i'
-                            }
-                        },
-                        {
-                            "user.screen_name":{
-                                $regex: new RegExp(author),
-                                $options: 'i'
-                            }
-                        }           
-                    ]
-                }
-            };
-        }else if(player != "" && team == ""){
-            options = {
-                $match: {
-                    $and:[
-                        {
-                            text:{
-                                $regex: new RegExp(player),
-                                $options: 'i'
-                            }
-                        },
-                        {
-                            "user.screen_name":{
-                                $regex: new RegExp(author),
-                                $options: 'i'
-                            }
-                        }
-                    ]  
-                }
-            };
-        }else if( player == "" && team != ""){
-            options = {
-                $match: {
-                    $and:[
-                        {
-                            text:{
-                                $regex: new RegExp(team),
-                                $options: 'i'
-                            }
-                        },
-                        {
-                            "user.screen_name":{
-                                $regex: new RegExp(author),
-                                $options: 'i'
-                            }
-                        }
-                    ]  
-                }
-            };
-        }
-    }   
+    //             }
+    //         };
+    //     }else if( player == "" && team != ""){
+    //         options = {
+    //             $match: {
+    //                 $and:[
+    //                     {
+    //                         text:{
+    //                             $regex: new RegExp(team),
+    //                             $options: 'i'
+    //                         }
+    //                     },
+    //                     {
+    //                         "user.screen_name":{
+    //                             $regex: new RegExp(author),
+    //                             $options: 'i'
+    //                         }
+    //                     }
+    //                 ]  
+    //             }
+    //         };
+    //     }
+    // }else if (player_team_op == "AND"){
+    //     if(player != "" && team != ""){
+    //         options = {
+    //             $match: {
+    //                 $and:[
+    //                     {
+    //                         text:{
+    //                             $regex: new RegExp(player),
+    //                             $options: 'i'
+    //                         }
+    //                     },
+    //                     {
+    //                         text:{
+    //                             $regex: new RegExp(team), 
+    //                             $options: 'i'
+    //                         }
+    //                     },
+    //                     {
+    //                         "user.screen_name":{
+    //                             $regex: new RegExp(author),
+    //                             $options: 'i'
+    //                         }
+    //                     }           
+    //                 ]
+    //             }
+    //         };
+    //     }else if(player != "" && team == ""){
+    //         options = {
+    //             $match: {
+    //                 $and:[
+    //                     {
+    //                         text:{
+    //                             $regex: new RegExp(player),
+    //                             $options: 'i'
+    //                         }
+    //                     },
+    //                     {
+    //                         "user.screen_name":{
+    //                             $regex: new RegExp(author),
+    //                             $options: 'i'
+    //                         }
+    //                     }
+    //                 ]  
+    //             }
+    //         };
+    //     }else if( player == "" && team != ""){
+    //         options = {
+    //             $match: {
+    //                 $and:[
+    //                     {
+    //                         text:{
+    //                             $regex: new RegExp(team),
+    //                             $options: 'i'
+    //                         }
+    //                     },
+    //                     {
+    //                         "user.screen_name":{
+    //                             $regex: new RegExp(author),
+    //                             $options: 'i'
+    //                         }
+    //                     }
+    //                 ]  
+    //             }
+    //         };
+    //     }
+    // }   
 
     console.log("options");
     console.log(options);
