@@ -229,7 +229,7 @@ tweets.getTweetsByRest = function(req,res){
             if(author.trim().replace(/ /g," OR ").replace(/,/g," ").indexOf("@") != -1 || author.trim().replace(/ /g," OR ").replace(/,/g," ").indexOf("#") != -1){
                 return ""+author.trim().replace(/ /g," OR ").replace(/,/g," ")+"";
             }else{
-                return "'"+author.trim().replace(/ /g," OR ").replace(/,/g," ")+"'";
+                return ""+author.trim().replace(/ /g," OR ").replace(/,/g," ")+"";
             }
         })
         author = authorArr.join(" OR ");   
