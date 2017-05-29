@@ -28,9 +28,12 @@ var saveTweetIntoDb = function(tweet,type,callback){
     // console.log("inside the save tweets function");
     
     Tweet.find({id: tweet.id}).exec(function(err,data){
+        console.log("inside the save tweets function outside the if");
         if(err){
             console.log(err)
         }else{
+            console.log("data.lenght");
+            console.log(data.length)
             if (data.length == 0){
                
                 var newTweet = new Tweet(
