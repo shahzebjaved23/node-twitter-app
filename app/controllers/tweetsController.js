@@ -594,8 +594,7 @@ tweets.getFrequency = function(req,res){
 
     options = {
         $match: {
-            $or:[         
-            ]
+            
         }
     }
 
@@ -618,12 +617,12 @@ tweets.getFrequency = function(req,res){
     }
 
     if(author != ""){
-        options.$match.$or.push({
+        options["$match"] = {
                     "user.screen_name":{
                         $regex: new RegExp(author),
                         $options: 'i'
                     }
-                });    
+                };    
     }
     
 
