@@ -8,8 +8,8 @@ var tweetSchema = new Schema({
 		each is mapped to it's model reference.
 		* Makes the tweet more organized by player and team name 
 	*/
-    id: {type: String },
-    id_str: {type: String },
+    id: {type: String, unique: true},
+    id_str: {type: String, unique: true},
 	player: { type: Schema.ObjectId, ref: 'Player' },
     team: { type: Schema.ObjectId, ref: 'Team'},
 
