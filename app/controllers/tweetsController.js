@@ -299,9 +299,9 @@ tweets.getTweetsByRest = function(req,res){
 
     if(author != ""){
         if(team_author_op == "OR"){
-            searchStringREST = "from:"+author+" OR "+searchStringREST;
+            searchStringREST += " OR from:"+author;
         }else if(team_author_op = "AND"){
-            searchStringREST = "from:"+author+" "+searchStringREST;
+            searchStringREST += " from:"+author;
         }
     }
 
@@ -436,7 +436,7 @@ tweets.getTweetsFromDb = function(req,res){
 tweets.getFrequency = function(req,res){
     var player = req.query.player ? req.query.player : "";
     var team = req.query.team ? req.query.team : "";
-    var author = req.query.author ? req.query.author : "football-news";
+    var author = req.query.author ? req.query.author : "";
     var player_team_op = req.query.player_team_op;
     var team_author_op = req.query.team_author_op;
 
@@ -462,7 +462,7 @@ tweets.getFrequency = function(req,res){
         if(player != "" && team != ""){
             options = {
                 $match: {
-                    $or:[
+                    $and:[
                         {
                             text:{
                                 $regex: new RegExp(player),
@@ -474,6 +474,10 @@ tweets.getFrequency = function(req,res){
                                 $regex: new RegExp(team), 
                                 $options: 'i'
                             }
+                        },
+                        "user.screen_name":{
+                            $regex: new RegExp(author),
+                            $options: 'i'
                         }            
                     ]
                 }
@@ -481,10 +485,19 @@ tweets.getFrequency = function(req,res){
         }else if(player != "" && team == ""){
             options = {
                 $match: {
-                    text:{
-                        $regex: new RegExp(player),
-                        $options: 'i'
-                    }  
+                    $and:[
+                        {
+                            text:{
+                                $regex: new RegExp(player),
+                                $options: 'i'
+                            },
+                            "user.screen_name":{
+                                $regex: new RegExp(author),
+                                $options: 'i'
+                            }
+                        }
+                    ]
+                      
                 }
             };
         }else if( player == "" && team != ""){
