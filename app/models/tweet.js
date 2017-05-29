@@ -9,7 +9,7 @@ var tweetSchema = new Schema({
 		* Makes the tweet more organized by player and team name 
 	*/
     id: {type: String, unique: true},
-    id_str: {type: String, unique: true},
+    id_str: {type: String },
 	player: { type: Schema.ObjectId, ref: 'Player' },
     team: { type: Schema.ObjectId, ref: 'Team'},
 
