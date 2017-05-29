@@ -210,7 +210,7 @@ tweets.getTweetsByRest = function(req,res){
     if(team){
         var teamArr = team.split(" ");
         teamArr = teamArr.map(function(t){
-            return "'"+t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ")+"'";
+            return ""+t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ")+"";
         })
         team = teamArr.join(" OR ");    
     }
@@ -283,9 +283,9 @@ tweets.getTweetsByRest = function(req,res){
 
     if(author != ""){
         if(team_author_op == "OR"){
-            searchStringREST += "OR from:"+author;
+            searchStringREST = "from:"+author+" OR "+searchStringREST;
         }else if(team_author_op = "AND"){
-            searchStringREST += "AND from:"+author;
+            searchStringREST = "from:"+author+" "+searchStringREST;
         }
     }
 
@@ -348,7 +348,7 @@ tweets.getTweetsByRest = function(req,res){
 var searchDb = function(player,team,author,player_team_op,team_author_op,callback){
     console.log(RegExp(author));
 
-    player = player.replace(/,/g," ").trim();
+    player = player.replace(/,/g," ").replace(/ /g,"|").trim();
     team = team.replace(/FC/g,"").replace(/F.C/g,"").replace(/,F.C./g,"").replace(/ /g," OR ").trim();
     author = author.replace(/ /g,"|").trim();
 
