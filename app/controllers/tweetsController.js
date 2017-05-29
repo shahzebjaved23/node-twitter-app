@@ -203,7 +203,7 @@ tweets.getTweetsByRest = function(req,res){
         var playerArr = player.split(" ");
         playerArr = playerArr.map(function(p){
             if(p.replace(/,/g," ").indexOf("@") != -1 || p.replace(/,/g," ").indexOf("#") != -1){
-                return ""+p.replace(/,/g," ")+""
+                return "'"+p.replace(/,/g," ")+"'"
             }else{
                 return "'"+p.replace(/,/g," ")+"'"
             }
@@ -215,7 +215,7 @@ tweets.getTweetsByRest = function(req,res){
         var teamArr = team.split(" ");
         teamArr = teamArr.map(function(t){
             if(t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ").indexOf("@") != -1 || t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ").indexOf("#") != -1){
-                return ""+t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ")+"";
+                return "'"+t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ")+"'";
             }else{
                 return "'"+t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ")+"'";
             }  
