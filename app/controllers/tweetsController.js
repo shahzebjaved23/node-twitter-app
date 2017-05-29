@@ -218,14 +218,21 @@ tweets.getTweetsByRest = function(req,res){
                 return "'"+t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ")+"'";
             }else{
                 return ""+t.replace(/,FC/g,"").replace(/,F.C./g,"").replace(/,F.C/g,"").replace(/,/g," ")+"";
-            }
-            
+            }  
         })
         team = teamArr.join(" OR ");    
     }
 
     if(author){
-        author = "'"+author.trim().replace(/ /g," OR ").replace(/,/g," ");    
+        var authorArr = author.trim().split(" ");
+        authorArr = authorArr.map(function(a){
+            if(author.trim().replace(/ /g," OR ").replace(/,/g," ").indexOf("@") != -1 || author.trim().replace(/ /g," OR ").replace(/,/g," ").indexOf("#") != -1){
+                return "'"+author.trim().replace(/ /g," OR ").replace(/,/g," ")+"'";
+            }else{
+                return ""+author.trim().replace(/ /g," OR ").replace(/,/g," ");
+            }
+        })
+        author = authorArr.join(" OR ");   
     }
 
     /*
