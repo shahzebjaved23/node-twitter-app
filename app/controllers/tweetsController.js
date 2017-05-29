@@ -594,7 +594,7 @@ tweets.getFrequency = function(req,res){
 
     options = {
         $match: {
-            $and:[
+            $or:[
                 {
                     text:{
                         $regex: new RegExp(player),
@@ -618,7 +618,7 @@ tweets.getFrequency = function(req,res){
     }
 
     if(player != ""){
-        options.$match.$and.push({
+        options.$match.$or.push({
                     text:{
                         $regex: new RegExp(player),
                         $options: 'i'
@@ -637,7 +637,7 @@ tweets.getFrequency = function(req,res){
 
     if(author != ""){
         options.$match.$and.push({
-                    text:{
+                    "user.screen_name":{
                         $regex: new RegExp(author),
                         $options: 'i'
                     }
