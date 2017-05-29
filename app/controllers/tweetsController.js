@@ -400,7 +400,7 @@ var searchDb = function(player,team,author,player_team_op,team_author_op,callbac
                     $options: 'i'
                 }
             },
-            {"user.name": 
+            {"user.screen_name": 
                 {
                     $regex: new RegExp(author),
                     $options: 'i'
