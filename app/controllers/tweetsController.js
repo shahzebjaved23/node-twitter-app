@@ -25,7 +25,7 @@ io.on('connection', function(s){
 * @param {function} callback
 */ 
 var saveTweetIntoDb = function(tweet,type,callback){
-    console.log("inside the save tweets function");
+    // console.log("inside the save tweets function");
     
     Tweet.find({id: tweet.id}).exec(function(err,data){
         if(err){
@@ -59,6 +59,7 @@ var saveTweetIntoDb = function(tweet,type,callback){
                 )
                 
                 newTweet.save(function(err){
+                    console.log("saving the tweet");
                     if(err){
                         console.log(err);
                     }else{
