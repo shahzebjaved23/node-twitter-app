@@ -630,7 +630,7 @@ tweets.getFrequency = function(req,res){
 
 
     console.log("options");
-    console.log(options);
+    console.dir(options,{ depth: null });
 
 
 
