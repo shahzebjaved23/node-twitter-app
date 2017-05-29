@@ -591,6 +591,7 @@ tweets.getFrequency = function(req,res){
         }
     }   
 
+    console.log("options");
     console.log(options);
 
 
