@@ -505,10 +505,20 @@ tweets.getFrequency = function(req,res){
         }else if( player == "" && team != ""){
             options = {
                 $match: {
-                    text:{
-                        $regex: new RegExp(team),
-                        $options: 'i'
-                    }  
+                    $and:[
+                        {
+                            text:{
+                                $regex: new RegExp(team),
+                                $options: 'i'
+                            }
+                        },
+                        {
+                            "user.screen_name":{
+                                $regex: new RegExp(author),
+                                $options: 'i'
+                            }
+                        }
+                    ]  
                 }
             };
         }
@@ -528,26 +538,52 @@ tweets.getFrequency = function(req,res){
                                 $regex: new RegExp(team), 
                                 $options: 'i'
                             }
-                        }            
+                        },
+                        {
+                            "user.screen_name":{
+                                $regex: new RegExp(author),
+                                $options: 'i'
+                            }
+                        }           
                     ]
                 }
             };
         }else if(player != "" && team == ""){
             options = {
                 $match: {
-                    text:{
-                        $regex: new RegExp(player),
-                        $options: 'i'
-                    }  
+                    $and:[
+                        {
+                            text:{
+                                $regex: new RegExp(player),
+                                $options: 'i'
+                            }
+                        },
+                        {
+                            "user.screen_name":{
+                                $regex: new RegExp(author),
+                                $options: 'i'
+                            }
+                        }
+                    ]  
                 }
             };
         }else if( player == "" && team != ""){
             options = {
                 $match: {
-                    text:{
-                        $regex: new RegExp(team),
-                        $options: 'i'
-                    }  
+                    $and:[
+                        {
+                            text:{
+                                $regex: new RegExp(team),
+                                $options: 'i'
+                            }
+                        },
+                        {
+                            "user.screen_name":{
+                                $regex: new RegExp(author),
+                                $options: 'i'
+                            }
+                        }
+                    ]  
                 }
             };
         }
