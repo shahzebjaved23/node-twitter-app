@@ -345,8 +345,6 @@ tweets.getTweetsByRest = function(req,res){
                                             return (!!t.retweeted_status)
                                         });
                                         console.log(tweetsArray.length);
-                                        var retarr = _.countBy(tweetsArray, _.identity);
-                                        console.log(retarr);
                                         res.send(tweetsArray)    
                                     }
                                 })    
@@ -593,28 +591,85 @@ tweets.getFrequency = function(req,res){
     //     }
     // }   
 
+
+    options = {
+        $match: {
+            $and:[
+                {
+                    text:{
+                        $regex: new RegExp(player),
+                        $options: 'i'
+                    }
+                },
+                {
+                    text:{
+                        $regex: new RegExp(team), 
+                        $options: 'i'
+                    }
+                },
+                {
+                    "user.screen_name":{
+                        $regex: new RegExp(author),
+                        $options: 'i'
+                    }
+                }            
+            ]
+        }
+    }
+
+    if(player != ""){
+        options.$match.$and.push({
+                    text:{
+                        $regex: new RegExp(player),
+                        $options: 'i'
+                    }
+                });    
+    }
+
+    if(team != ""){
+        options.$match.$and.push({
+                    text:{
+                        $regex: new RegExp(team),
+                        $options: 'i'
+                    }
+                });    
+    }
+
+    if(author != ""){
+        options.$match.$and.push({
+                    text:{
+                        $regex: new RegExp(author),
+                        $options: 'i'
+                    }
+                });    
+    }
+    
+
+
+
     console.log("options");
     console.log(options);
 
 
-    // Tweet.aggregate([
-    //     options,
-    //     { 
-    //         "$group": {
-    //             "_id": {
-    //                 "year": { "$year": "$created_at" },
-    //                 "month":{ "$month": "$created_at"},
-    //                 "day": { "$dayOfMonth": "$created_at" } 
-    //             },
-    //             "count": { "$sum" : 1 }
-    //         }
-    //     },
-    //     {"$sort": { "_id.month": 1,"_id.day": 1 }}
-    // ],function(err,response){
-    //     console.log("getFrequency:")
-    //     console.log(response);
-    //     res.send(response);
-    // })
+
+    Tweet.aggregate([
+        options,
+        { 
+            "$group": {
+                "_id": {
+                    "year": { "$year": "$created_at" },
+                    "month":{ "$month": "$created_at"},
+                    "day": { "$dayOfMonth": "$created_at" } 
+                },
+                "count": { "$sum" : 1 }
+            }
+        },
+        {"$sort": { "_id.month": 1,"_id.day": 1 }}
+    ],function(err,response){
+        console.log("getFrequency:")
+        console.log(response);
+        res.send(response);
+    })
 }
 
 module.exports = tweets;
