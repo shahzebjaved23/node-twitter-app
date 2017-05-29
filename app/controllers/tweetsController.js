@@ -338,6 +338,7 @@ tweets.getTweetsByRest = function(req,res){
                                         // save tweets to db
                                         tweetsArray.forEach(function(tweet){
                                             saveTweetIntoDb(tweet,'rest',function(tweet){
+                                                console.log("saved tweets");
                                             })
                                         })
                                         // remove retweets to remove duplicates
