@@ -476,7 +476,7 @@ tweets.getFrequency = function(req,res){
                             }
                         },
                         {
-                            "$user.screen_name":{
+                            "user.screen_name":{
                                 $regex: new RegExp(author),
                                 $options: 'i'
                             }
@@ -493,7 +493,7 @@ tweets.getFrequency = function(req,res){
                                 $regex: new RegExp(player),
                                 $options: 'i'
                             },
-                            "$user.screen_name":{
+                            "user.screen_name":{
                                 $regex: new RegExp(author),
                                 $options: 'i'
                             }
@@ -513,7 +513,7 @@ tweets.getFrequency = function(req,res){
                             }
                         },
                         {
-                            "$user.screen_name":{
+                            "user.screen_name":{
                                 $regex: new RegExp(author),
                                 $options: 'i'
                             }
@@ -540,7 +540,7 @@ tweets.getFrequency = function(req,res){
                             }
                         },
                         {
-                            "$user.screen_name":{
+                            "user.screen_name":{
                                 $regex: new RegExp(author),
                                 $options: 'i'
                             }
@@ -559,7 +559,7 @@ tweets.getFrequency = function(req,res){
                             }
                         },
                         {
-                            "$user.screen_name":{
+                            "user.screen_name":{
                                 $regex: new RegExp(author),
                                 $options: 'i'
                             }
@@ -578,7 +578,7 @@ tweets.getFrequency = function(req,res){
                             }
                         },
                         {
-                            "$user.screen_name":{
+                            "user.screen_name":{
                                 $regex: new RegExp(author),
                                 $options: 'i'
                             }
