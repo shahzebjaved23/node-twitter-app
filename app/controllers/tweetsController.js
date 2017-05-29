@@ -475,9 +475,11 @@ tweets.getFrequency = function(req,res){
                                 $options: 'i'
                             }
                         },
-                        "user.screen_name":{
-                            $regex: new RegExp(author),
-                            $options: 'i'
+                        {
+                            "user.screen_name":{
+                                $regex: new RegExp(author),
+                                $options: 'i'
+                            }
                         }            
                     ]
                 }
